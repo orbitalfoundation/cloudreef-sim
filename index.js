@@ -24,16 +24,25 @@ globalThis.systems = []
 //////////////////////////////////////////////////////////////////////////////////////
 // agents
 
-await import('./agents/terrain.js');
-await import('./agents/ocean.js');
+const agentFiles = [
+    './agents/terrain.js',
+    './agents/ocean.js',
+    './agents/trees.js',
+    './agents/buildings.js',
+    './agents/people.js',
+    './agents/boats.js',
+    './agents/lights.js',
+    './agents/emitter.js'
+];
 
-// await import('./agents/trees.js');
-
-await import('./agents/buildings.js');
-await import('./agents/people.js');
-await import('./agents/boats.js');
-await import('./agents/lights.js');
-await import('./agents/emitter.js');
+for (const file of agentFiles) {
+    const module = await import(file);
+    for (const [key, value] of Object.entries(module)) {
+        if (typeof value === 'object' && value !== null && 'uuid' in value) {
+            db.addEntity(value);
+        }
+    }
+}
 
 //await import('./agents/fish.js')
 

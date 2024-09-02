@@ -1,5 +1,5 @@
 
-const emitterEntity = {
+export const treeEmitter = {
     uuid: `/emitter/tree_emitter`,
     type: 'emitter',
     minElevation: 11,
@@ -14,5 +14,4 @@ const emitterEntity = {
         }
     }
 };
-db.addEntity(emitterEntity);
 
