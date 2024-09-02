@@ -86,6 +86,7 @@ export function visualizeEntities(state) {
                     entity.node = new THREE.Mesh(geometry, material);
                     break;
                 case 'plane':
+                    // force planes to be flat by default and also not centered 
                     geometry = new THREE.PlaneGeometry(...entity.volume.props);
                     entity.node = new THREE.Mesh(geometry, material);
                     entity.node.rotation.set(Math.PI/2,0,0)
@@ -93,6 +94,7 @@ export function visualizeEntities(state) {
                     entity.position.z += entity.volume.props[1] / 2 
                     break;
                 case 'terrain':
+                    // force planes to be flat by default and also not centered 
                     geometry = new THREE.PlaneGeometry(...entity.volume.props);
                     {
                         const layer = layers.get('terrain')
@@ -120,9 +122,6 @@ export function visualizeEntities(state) {
                 if(entity.position) {
                     entity.node.position.set(entity.position.x, entity.position.y, entity.position.z);
                 }
-                if (entity.rotation) {
-//                    entity.node.rotation.set(entity.rotation.x, entity.rotation.y, entity.rotation.z);
-                }
                 scene.add(entity.node);
             }
 
@@ -138,37 +137,6 @@ export function visualizeEntities(state) {
 
     });
 }
-
-
-
-
-/*
-
-
-the problem is that things are centered; so the terrain is at the origin
-
-i feel like the terrain should be at width/2 , height / 2 
-
-and then all of the scene elements would now be exactly centered i think 
-
-if i had a parent node that was displaced by -width/2
-
-and added everything to that
-
-i would be ok
-
-...
-
-or ... 
-
-
-
-*/
-
-
-
-
-
 
 
 

@@ -58,6 +58,7 @@ export function fishMovementSystem(state) {
                     entity.heading = (entity.heading + Math.PI / 4) % (2 * Math.PI);
                     attempts++;
                 }
+
             }
 
             // If no valid move found after 8 attempts, fish stays in place
