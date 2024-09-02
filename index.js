@@ -32,7 +32,8 @@ const agentFiles = [
     './agents/people.js',
     './agents/boats.js',
     './agents/lights.js',
-    './agents/emitter.js'
+    './agents/emitter.js',
+    './agents/fish.js'
 ];
 
 for (const file of agentFiles) {
@@ -46,7 +47,6 @@ for (const file of agentFiles) {
     }
 }
 
-//await import('./agents/fish.js')
 
 //////////////////////////////////////////////////////////////////////////////////////
 // support for visualization
