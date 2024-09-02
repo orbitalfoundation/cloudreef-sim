@@ -1,30 +1,18 @@
 
-
-const db = globalThis.db
-
-function placeTrees(numTrees = 100) {
-    const landPositions = db.getLandPositions()
-
-    for (let i = 0; i < numTrees; i++) {
-        const randomIndex = Math.floor(Math.random() * landPositions.length);
-        const position = landPositions[randomIndex];
-
-position.y += 5
-
-        const treeEntity = {
-            uuid: `/tree/${i.toString().padStart(4, '0')}`,
-            type: 'tree',
-            position,
-            volume: { 
-                geometry: 'cylinder', 
-                props: [0.5, 2, 5, 8], 
-                material: { color: 0x228B22 } 
-            }
-        };
-
-        db.addEntity(treeEntity);
+const emitterEntity = {
+    uuid: `/emitter/tree_emitter`,
+    type: 'emitter',
+    minElevation: 11,
+    maxElevation: 999,
+    quantity: 100,
+    spawn: {
+        type: 'tree',
+        volume: { 
+            geometry: 'cylinder', 
+            props: [0.5, 2, 5, 8], 
+            material: { color: 0x228B22 } 
+        }
     }
-}
-
-placeTrees()
+};
+db.addEntity(emitterEntity);
 

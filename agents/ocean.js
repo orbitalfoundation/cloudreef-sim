@@ -1,3 +1,5 @@
+
+const config = globalThis.config
 const db = globalThis.db
 const width = globalThis.config.width;
 const height = globalThis.config.height;
@@ -6,7 +8,7 @@ function createOcean() {
     const oceanEntity = {
         uuid: '/ocean',
         type: 'ocean',
-        position: { x: 0, y: 0, z: 0 },
+        position: { x: 0, y: config.waterLevel, z: 0 },
         volume: {
             geometry: 'plane',
             props: [width, height],

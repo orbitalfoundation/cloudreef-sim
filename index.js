@@ -26,7 +26,9 @@ globalThis.systems = []
 
 await import('./agents/terrain.js');
 await import('./agents/ocean.js');
-await import('./agents/trees.js');
+
+// await import('./agents/trees.js');
+
 await import('./agents/buildings.js');
 await import('./agents/people.js');
 await import('./agents/boats.js');

@@ -39,25 +39,16 @@ function createTerrainEntity() {
         type: 'terrain',
         position: { x: 0, y: 0, z: 0 },
         volume: {
-            geometry: 'plane',
+            geometry: 'terrain',
             props: [width, height, width - 1, height - 1],
-            material: { color: 0xd3b683, wireframe: false }
+            material: { color: 0xd3b683, wireframe: false },
+            layer: 'terrain'
         },
         rotation: { x: -Math.PI / 2, y: 0, z: 0 }
     };
-
     db.addEntity(terrainEntity);
 }
 
 generateIslandElevationWithPerlin();
 createTerrainEntity();
-
-export function updateTerrainGeometry(geometry) {
-    const vertices = geometry.attributes.position.array;
-    for (let i = 0, j = 0; i < vertices.length; i += 3, j++) {
-        vertices[i + 2] = layer[j];
-    }
-    geometry.computeVertexNormals();
-    geometry.attributes.position.needsUpdate = true;
-}
 

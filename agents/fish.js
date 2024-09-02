@@ -7,35 +7,24 @@ const layer = layers.get('terrain')
 const terrain = globalThis.terrain
 const db = globalThis.db
 
-
-function getShorelinePositions(minElevation = 0, maxElevation = 9) {
-    const positions = [];
-
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const z = layer[x+y*width]
-            if (z > minElevation && z <= maxElevation) {
-                positions.push({ x:x - width/2, y:10, z:y - height/2 });
-            }
-        }
-    }
-
-    return positions;
-}
-
-
 function place(num = 50) {
-    const shorelinePositions = getShorelinePositions();
+
+    const positions = db.getPositionsWithinElevationRange(1, 9);
 
     for (let i = 0; i < num; i++) {
-        const randomIndex = Math.floor(Math.random() * shorelinePositions.length);
-        const position = shorelinePositions[randomIndex];
+        const randomIndex = Math.floor(Math.random() * positions.length);
+        const position = positions[randomIndex];
 
         const entity = {
             uuid: `/fish/${i.toString().padStart(4, '0')}`,
             type: 'fish',
             position,
             waypoint: position,
+            volume: {
+                geometry: 'sphere',
+                props: [1], 
+                material: { color: 0x00d700 } 
+            }
         };
 
         db.addEntity(entity);
@@ -43,22 +32,6 @@ function place(num = 50) {
 }
 
 place()
-
-function show() {
-    const mat = new THREE.MeshBasicMaterial({ color: 0xffff00 }); // blue for boat
-    const geo = new THREE.SphereGeometry(1, 8, 8); // Simple sphere for person
-
-    Object.values(db.entities).forEach(entity => {
-        if (entity.type === 'boat') {
-            const node = new THREE.Mesh(geo, mat);
-            node.position.set(entity.position.x,entity.position.y,entity.position.z)
-            terrain.add(node);
-            entity.node = node
-        }
-    });
-}
-
-show()
 
 export function fishMovementSystem() {
     const maxHeadingChange = Math.PI / 4; // Maximum change in heading per update (radians)

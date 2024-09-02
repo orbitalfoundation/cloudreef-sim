@@ -1,8 +1,9 @@
 
 
+const config = globalThis.config
 const scene = globalThis.scene
-const terrain = globalThis.terrain
 const db = globalThis.db
+
 
 function place(num = 50) {
     const shorelinePositions = db.getPositionsWithinElevationRange(7, 9);
@@ -10,13 +11,18 @@ function place(num = 50) {
     for (let i = 0; i < num; i++) {
         const randomIndex = Math.floor(Math.random() * shorelinePositions.length);
         const position = shorelinePositions[randomIndex];
+        position.y = globalThis.config.waterLevel
 
         const entity = {
             uuid: `/boat/${i.toString().padStart(4, '0')}`,
             type: 'boat',
             position,
             waypoint: position,
-            volume: { geometry: 'box', props: [3, 5, 3], material: { color: '0x444488' } }
+            volume: {
+                geometry: 'box',
+                props: [3, 5, 3],
+                material: { color: 'blue' }
+            }
         };
 
         db.addEntity(entity);
@@ -32,8 +38,8 @@ function boatSystem(state) {
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'boat') {
             if (state.tick === startFishingTick) {
-                // Move to a random nearby location with low elevation (below water)
-                const newLocation = { x: entity.position.x + Math.random()*4 - 2,y:10,z: entity.position.z + Math.random()*4 -2 } // findRandomWaterLocation(entity.position);
+                // Move to a random nearby location with low elevation (boats are always at water level which is hardcoded to 10 for now)
+                const newLocation = { x: entity.position.x + Math.random()*4 - 2,y:10,z: entity.position.z + Math.random()*4 -2 }
                 if (newLocation) {
                     entity.position = { ...newLocation };
                 }

@@ -38,7 +38,6 @@ function peopleSystem(state) {
             if (state.tick === state.morningTick) {
                 // Find the nearest boat using DB function
                 const nearestBoat = db.findNearestEntityOfType(entity.position, 'boat');
-                console.log("moving people", entity, nearestBoat);
                 if (nearestBoat) {
                     entity.position = { ...nearestBoat.position }; // Move to the boat
                 } else {
