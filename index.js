@@ -1,21 +1,27 @@
 
 
-import './core/vis.js'
+//////////////////////////////////////////////////////////////////////////////////////
+// setup core
 
+import './core/vis.js'
 import { Layers } from './core/layers.js'
 import { DB } from './core/db.js'
 
+// config
+
 const config = globalThis.config = {
-	width:512,
-	height:512,
+    width:512,
+    height:512,
 }
+
+// build databases
 
 const layers = globalThis.layers = new Layers(config.width,config.height);
 const db = globalThis.db = new DB(layers,config);
-
 globalThis.systems = []
 
-import { updateTerrainGeometry } from './agents/terrain.js';
+//////////////////////////////////////////////////////////////////////////////////////
+// agents
 
 await import('./agents/terrain.js');
 await import('./agents/ocean.js');
@@ -25,14 +31,10 @@ await import('./agents/people.js');
 await import('./agents/boats.js');
 //await import('./agents/fish.js')
 
-const scene = globalThis.scene;
+//////////////////////////////////////////////////////////////////////////////////////
+// support for visualization
 
-const state = {
-    tick: 0,
-    ticksPerDay: 1000,
-    morningTick: 333,
-    eveningTick: 666
-};
+const scene = globalThis.scene;
 
 function visualizeEntities(interpolationRate = 0.1) {
     Object.values(db.entities).forEach(entity => {
@@ -56,7 +58,20 @@ function visualizeEntities(interpolationRate = 0.1) {
                     break;
                 case 'plane':
                     geometry = new THREE.PlaneGeometry(...entity.volume.props);
+                    entity.position.y += 10
                     break;
+                case 'terrain':
+                    geometry = new THREE.PlaneGeometry(...entity.volume.props);
+                    {
+                        const layer = layers.get('terrain')
+                        const vertices = geometry.attributes.position.array;
+                        for (let i = 0, j = 0; i < vertices.length; i += 3, j++) {
+                            vertices[i + 2] = layer[j];
+                        }
+                        geometry.computeVertexNormals();
+                        geometry.attributes.position.needsUpdate = true;
+                    }
+                    break
                 default:
                     console.warn(`Unsupported geometry type: ${entity.volume.geometry}`);
                     return;
@@ -68,18 +83,21 @@ function visualizeEntities(interpolationRate = 0.1) {
                 entity.node.rotation.set(entity.rotation.x, entity.rotation.y, entity.rotation.z);
             }
             scene.add(entity.node);
-
-            // Special handling for terrain entity
-            if (entity.type === 'terrain') {
-                updateTerrainGeometry(entity.node.geometry);
-            }
         }
     });
 }
 
-function advanceSimulation() {
+////////////////////////////////////////////////////////////////////////////////////
+// support for advancing sim
 
-	console.log("on tick",state.tick)
+const state = {
+    tick: 0,
+    ticksPerDay: 1000,
+    morningTick: 333,
+    eveningTick: 666
+};
+
+function advanceSimulation() {
 
 	// update systems
     globalThis.systems.forEach(system=>{
