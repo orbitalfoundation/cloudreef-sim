@@ -3,23 +3,23 @@ export const fishEmitter = {
     type: 'emitter',
     minElevation: 1,
     maxElevation: 9,
-    quantity: 50,
+    quantity: 500,
     spawn: {
         type: 'fish',
         volume: {
             geometry: 'sphere',
             props: [1],
-            material: { color: 0x00d700 }
+            material: { color: 0xff0000 }
         }
     }
 };
 
- function fishMovementSystem(state) {
+export function fishMovementSystem(state) {
     const maxHeadingChange = Math.PI / 4; // Maximum change in heading per update (radians)
     const speed = 0.5; // Speed of the fish
-    const width = globalThis.config.width
-    const height = globalThis.config.height
-    const terrain = glbalThis.layers[globalThis.config.terrain]
+    const width = globalThis.config.width;
+    const height = globalThis.config.height;
+    const terrain = globalThis.layers.get('terrain');
 
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'fish') {
@@ -34,26 +34,22 @@ export const fishEmitter = {
             }
 
             // Calculate the new position based on the heading
-            const newX = entity.position.x + Math.cos(entity.heading) * speed;
-            const newZ = entity.position.z + Math.sin(entity.heading) * speed;
+            let newX = entity.position.x + Math.cos(entity.heading) * speed;
+            let newZ = entity.position.z + Math.sin(entity.heading) * speed;
 
-            // quick hack - stay in range - this code could be improved using modulo
-            while(newX < 0) newX += width
-            while(newZ < 0) newZ += height
-            while(newX >= width) newX -= width
-            while(newZ >= height) newZ -= height
+            // Ensure newX and newZ stay within bounds
+            newX = Math.max(0, Math.min(newX, width - 1));
+            newZ = Math.max(0, Math.min(newZ, height - 1));
 
-            // Layer data is ranged from 0-width and 0-height even though the visualization is centered at the origin
-            // Find elevation at this point and make sure the fish stays above the terrain and below the surface
-
-            const layerX = Math.floor(newX + width / 2)
-            const layerY = Math.floor(newZ + height / 2)
-            const terrainHeight = layers.getAt(elevationLayer, layerX, layerY );
+            const terrainHeight = terrain[Math.floor(newZ) * width + Math.floor(newX)];
             const newY = Math.max(terrainHeight + 1, entity.position.y);
 
-            // Update position if within bounds
-            if (newX >= -width / 2 && newX < width / 2 && newZ >= -height / 2 && newZ < height / 2 && newY <= 0) {
+            // Update position if within water bounds
+            if (newY <= globalThis.config.waterLevel) {
                 entity.position = { x: newX, y: newY, z: newZ };
+            } else {
+                // If the fish would move out of water, reverse its heading
+                entity.heading = (entity.heading + Math.PI) % (2 * Math.PI);
             }
         }
     });
