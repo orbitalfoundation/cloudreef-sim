@@ -1,31 +1,11 @@
 
 
-const layers = globalThis.layers
 const scene = globalThis.scene
-const width = globalThis.config.width;
-const height = globalThis.config.height;
-const layer = layers.get('terrain')
 const terrain = globalThis.terrain
 const db = globalThis.db
 
-function getShorelinePositions(minElevation = 7, maxElevation = 9) {
-    const positions = [];
-
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const z = layer[x+y*width]
-            if (z > minElevation && z <= maxElevation) {
-                positions.push({ x:x - width/2, y:10, z:y - height/2 });
-            }
-        }
-    }
-
-    return positions;
-}
-
-
 function place(num = 50) {
-    const shorelinePositions = getShorelinePositions();
+    const shorelinePositions = db.getPositionsWithinElevationRange(7, 9);
 
     for (let i = 0; i < num; i++) {
         const randomIndex = Math.floor(Math.random() * shorelinePositions.length);
@@ -36,6 +16,7 @@ function place(num = 50) {
             type: 'boat',
             position,
             waypoint: position,
+            volume: { geometry: 'box', whd: [1, 1, 1], material: { color: '0x0000ff' } }
         };
 
         db.addEntity(entity);
@@ -43,25 +24,6 @@ function place(num = 50) {
 }
 
 place()
-
-function show() {
-    const buildingMaterial = new THREE.MeshBasicMaterial({ color: 0x444488 }); // blue for boat
-    const buildingGeometry = new THREE.BoxGeometry(3, 5, 3); // Simple box for building
-
-    Object.values(db.entities).forEach(entity => {
-        if (entity.type === 'boat') {
-            const node = new THREE.Mesh(buildingGeometry, buildingMaterial);
-            node.position.set(entity.position.x,entity.position.y,entity.position.z)
-            terrain.add(node);
-            entity.node = node
-        }
-    });
-}
-
-show()
-
-
-
 
 function boatSystem(state) {
     const startFishingTick = state.morningTick + 20;
@@ -90,24 +52,16 @@ function boatSystem(state) {
 
 function findRandomWaterLocation(currentPosition) {
     const maxDistance = 20; // Limit search radius for nearby water locations
-    let possibleLocations = [];
+    const waterPositions = db.getPositionsWithinElevationRange(-Infinity, 0);
+    
+    const nearbyWaterPositions = waterPositions.filter(pos => 
+        Math.abs(pos.x - currentPosition.x) <= maxDistance &&
+        Math.abs(pos.z - currentPosition.z) <= maxDistance
+    );
 
-    for (let y = -maxDistance; y <= maxDistance; y++) {
-        for (let x = -maxDistance; x <= maxDistance; x++) {
-            const nx = currentPosition.x + x;
-            const nz = currentPosition.z + y;
-            if (nx >= 0 && nx < width && nz >= 0 && nz < height) {
-                const elevation = 0 //layer[nx + width / 2, nz + height / 2);
-                if (elevation <= 0) { // Below water
-                    possibleLocations.push({ x: nx, y: currentPosition.y, z: nz });
-                }
-            }
-        }
-    }
-
-    if (possibleLocations.length > 0) {
-        const randomIndex = Math.floor(Math.random() * possibleLocations.length);
-        return possibleLocations[randomIndex];
+    if (nearbyWaterPositions.length > 0) {
+        const randomIndex = Math.floor(Math.random() * nearbyWaterPositions.length);
+        return nearbyWaterPositions[randomIndex];
     }
 
     return null; // No suitable location found
