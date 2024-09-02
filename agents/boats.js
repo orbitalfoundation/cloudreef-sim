@@ -14,7 +14,7 @@ export const boatEmitter = {
     }
 };
 
-function boatSystem(state) {
+export function boatSystem(state) {
     const config = globalThis.config;
     const startFishingTick = state.morningTick + 20;
     const returnHomeTick = state.eveningTick - 20;
@@ -55,6 +55,4 @@ function findRandomWaterLocation(currentPosition) {
 
     return null;
 }
-
-globalThis.systems.push(boatSystem);
 
