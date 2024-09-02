@@ -1,37 +1,21 @@
-
-
-const config = globalThis.config
-const scene = globalThis.scene
-const db = globalThis.db
-
-
-function place(num = 50) {
-    const shorelinePositions = db.getPositionsWithinElevationRange(7, 9);
-
-    for (let i = 0; i < num; i++) {
-        const randomIndex = Math.floor(Math.random() * shorelinePositions.length);
-        const position = shorelinePositions[randomIndex];
-        position.y = globalThis.config.waterLevel
-
-        const entity = {
-            uuid: `/boat/${i.toString().padStart(4, '0')}`,
-            type: 'boat',
-            position,
-            waypoint: position,
-            volume: {
-                geometry: 'box',
-                props: [3, 5, 3],
-                material: { color: 'blue' }
-            }
-        };
-
-        db.addEntity(entity);
+export const boatEmitter = {
+    uuid: `/emitter/boat_emitter`,
+    type: 'emitter',
+    minElevation: 7,
+    maxElevation: 9,
+    quantity: 50,
+    spawn: {
+        type: 'boat',
+        volume: { 
+            geometry: 'box', 
+            props: [3, 5, 3], 
+            material: { color: 'blue' } 
+        }
     }
-}
-
-place()
+};
 
 function boatSystem(state) {
+    const config = globalThis.config;
     const startFishingTick = state.morningTick + 20;
     const returnHomeTick = state.eveningTick - 20;
 
