@@ -11,7 +11,7 @@ const config = globalThis.config = {
 }
 
 const layers = globalThis.layers = new Layers(config.width,config.height);
-const db = globalThis.db = new DB();
+const db = globalThis.db = new DB(layers,config);
 
 globalThis.systems = []
 
@@ -25,8 +25,9 @@ await import('./agents/people.js')
 
 await import('./agents/boats.js')
 
-await import('./agents/fish.js')
+//await import('./agents/fish.js')
 
+const terrain = globalThis.terrain
 
 
 
@@ -40,13 +41,34 @@ const state = {
 }
 
 
-function interpolatePositions(interpolationRate = 0.1) {
+function visualizeEntities(interpolationRate = 0.1) {
     Object.values(db.entities).forEach(entity => {
         if (entity.node) {
             // Interpolate X, Y, and Z positions
             entity.node.position.x += (entity.position.x - entity.node.position.x) * interpolationRate;
             entity.node.position.y += (entity.position.y - entity.node.position.y) * interpolationRate;
             entity.node.position.z += (entity.position.z - entity.node.position.z) * interpolationRate;
+        } else if (entity.volume) {
+            // Create a new node for the entity
+            let geometry, material;
+            switch (entity.volume.geometry) {
+                case 'box':
+                    geometry = new THREE.BoxGeometry(...entity.volume.props);
+                    break;
+                case 'sphere':
+                    geometry = new THREE.SphereGeometry(entity.volume.props[0] / 2);
+                    break;
+                case 'cylinder':
+                    geometry = new THREE.CylinderGeometry(...entity.volume.props);
+                    break;
+                default:
+                    console.warn(`Unsupported geometry type: ${entity.volume.geometry}`);
+                    return;
+            }
+            material = new THREE.MeshBasicMaterial(entity.volume.material);
+            entity.node = new THREE.Mesh(geometry, material);
+            entity.node.position.set(entity.position.x, entity.position.y, entity.position.z);
+            terrain.add(entity.node);
         }
     });
 }
@@ -60,8 +82,8 @@ function advanceSimulation() {
     	system(state)
     })
 
-    // have the visual representation move towards the ideal representation
-    interpolatePositions()
+    // Update visual representation of entities
+    visualizeEntities()
 
     // Increment the global tick
     state.tick = (state.tick + 1) % state.ticksPerDay;

@@ -38,28 +38,16 @@ position.y += 5
             uuid: `/tree/${i.toString().padStart(4, '0')}`,
             type: 'tree',
             position,
+            volume: { 
+                geometry: 'cylinder', 
+                props: [0.5, 2, 5, 8], 
+                material: { color: 0x228B22 } 
+            }
         };
 
         db.addEntity(treeEntity);
     }
 }
 
-const terrain = globalThis.terrain
-
-function visualizeTrees(scene, db) {
-    const treeMaterial = new THREE.MeshBasicMaterial({ color: 0x228B22 }); // Forest green
-    const treeGeometry = new THREE.CylinderGeometry(0.5, 2, 5, 8); // Simple cylinder for tree trunk
-
-    Object.values(db.entities).forEach(entity => {
-        if (entity.type === 'tree') {
-            const node = new THREE.Mesh(treeGeometry, treeMaterial);
-            node.position.set(entity.position.x,entity.position.y,entity.position.z)
-            terrain.add(node);
-            entity.node = node
-        }
-    });
-}
-
 placeTrees()
-visualizeTrees(scene,db)
 
