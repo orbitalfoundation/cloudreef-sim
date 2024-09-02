@@ -21,28 +21,27 @@ function boatSystem(state) {
 
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'boat') {
+            if (!entity.waypoint) {
+                entity.waypoint = { ...entity.position };
+            }
+
             if (state.tick === startFishingTick) {
-                // Move to a random nearby location with low elevation (boats are always at water level which is hardcoded to 10 for now)
-                const newLocation = { x: entity.position.x + Math.random()*4 - 2,y:10,z: entity.position.z + Math.random()*4 -2 }
+                // Move to a random nearby location
+                const newLocation = findRandomWaterLocation(entity.position);
                 if (newLocation) {
-                    entity.position = { ...newLocation };
+                    entity.position = { ...newLocation, y: config.waterLevel };
                 }
             } else if (state.tick === returnHomeTick) {
                 // Move back to the starting waypoint
-                if (entity.waypoint) {
-                    entity.position = { ...entity.waypoint };
-                }
+                entity.position = { ...entity.waypoint, y: config.waterLevel };
             }
         }
     });
-
 }
 
-// fix @todo
-
 function findRandomWaterLocation(currentPosition) {
-    const maxDistance = 20; // Limit search radius for nearby water locations
-    const waterPositions = db.getPositionsWithinElevationRange(-Infinity, 0);
+    const maxDistance = 20;
+    const waterPositions = db.getPositionsWithinElevationRange(-Infinity, config.waterLevel);
     
     const nearbyWaterPositions = waterPositions.filter(pos => 
         Math.abs(pos.x - currentPosition.x) <= maxDistance &&
@@ -54,10 +53,8 @@ function findRandomWaterLocation(currentPosition) {
         return nearbyWaterPositions[randomIndex];
     }
 
-    return null; // No suitable location found
+    return null;
 }
 
-
-
-globalThis.systems.push( boatSystem )
+globalThis.systems.push(boatSystem);
 
