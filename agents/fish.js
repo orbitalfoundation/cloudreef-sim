@@ -20,6 +20,7 @@ export function fishMovementSystem(state) {
     const width = globalThis.config.width;
     const height = globalThis.config.height;
     const terrain = globalThis.layers.get('terrain');
+    const waterLevel = globalThis.config.waterLevel;
 
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'fish') {
@@ -33,23 +34,35 @@ export function fishMovementSystem(state) {
                 entity.heading += (Math.random() - 0.5) * maxHeadingChange;
             }
 
-            // Calculate the new position based on the heading
-            let newX = entity.position.x + Math.cos(entity.heading) * speed;
-            let newZ = entity.position.z + Math.sin(entity.heading) * speed;
+            let attempts = 0;
+            let validMove = false;
 
-            // Ensure newX and newZ stay within bounds
-            newX = Math.max(0, Math.min(newX, width - 1));
-            newZ = Math.max(0, Math.min(newZ, height - 1));
+            while (!validMove && attempts < 8) {
+                // Calculate the new position based on the heading
+                let newX = entity.position.x + Math.cos(entity.heading) * speed;
+                let newZ = entity.position.z + Math.sin(entity.heading) * speed;
 
-            const terrainHeight = terrain[Math.floor(newZ) * width + Math.floor(newX)];
-            const newY = Math.max(terrainHeight + 1, entity.position.y);
+                // Ensure newX and newZ stay within bounds
+                newX = Math.max(0, Math.min(newX, width - 1));
+                newZ = Math.max(0, Math.min(newZ, height - 1));
 
-            // Update position if within water bounds
-            if (newY <= globalThis.config.waterLevel) {
-                entity.position = { x: newX, y: newY, z: newZ };
-            } else {
-                // If the fish would move out of water, reverse its heading
-                entity.heading = (entity.heading + Math.PI) % (2 * Math.PI);
+                const terrainHeight = terrain[Math.floor(newZ) * width + Math.floor(newX)];
+
+                // Check if the new position is valid (above terrain and below water level)
+                if (terrainHeight < waterLevel) {
+                    const newY = Math.max(terrainHeight + 1, Math.min(entity.position.y, waterLevel - 1));
+                    entity.position = { x: newX, y: newY, z: newZ };
+                    validMove = true;
+                } else {
+                    // If the move is invalid, change direction and try again
+                    entity.heading = (entity.heading + Math.PI / 4) % (2 * Math.PI);
+                    attempts++;
+                }
+            }
+
+            // If no valid move found after 8 attempts, fish stays in place
+            if (!validMove) {
+                console.log("Fish couldn't find a valid move");
             }
         }
     });
