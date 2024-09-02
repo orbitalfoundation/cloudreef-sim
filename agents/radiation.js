@@ -1,0 +1,1 @@
+//// let us first focus on a day night cycle - i feel like day and night are represented by a couple of phenomena in the crudest sense, there is typically a temperature variation, there is also increased solar radiation which we may want to capture as a phenomena
