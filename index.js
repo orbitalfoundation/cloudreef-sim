@@ -3,15 +3,16 @@
 //////////////////////////////////////////////////////////////////////////////////////
 // setup core
 
-import './core/vis.js'
 import { Layers } from './core/layers.js'
 import { DB } from './core/db.js'
 
 // config
 
 const config = globalThis.config = {
-    width:512,
-    height:512,
+    width: 512,
+    height: 512,
+    waterLevel: 10,
+    terrain: 'terrain',
 }
 
 // build databases
@@ -29,24 +30,44 @@ await import('./agents/trees.js');
 await import('./agents/buildings.js');
 await import('./agents/people.js');
 await import('./agents/boats.js');
+await import('./agents/lights.js');
+await import('./agents/emitter.js');
+
 //await import('./agents/fish.js')
 
 //////////////////////////////////////////////////////////////////////////////////////
 // support for visualization
 
+import './core/vis.js'
 const scene = globalThis.scene;
 
 function visualizeEntities(interpolationRate = 0.1) {
     Object.values(db.entities).forEach(entity => {
-        if (entity.node) {
-            // Interpolate X, Y, and Z positions
-            entity.node.position.x += (entity.position.x - entity.node.position.x) * interpolationRate;
-            entity.node.position.y += (entity.position.y - entity.node.position.y) * interpolationRate;
-            entity.node.position.z += (entity.position.z - entity.node.position.z) * interpolationRate;
-        } else if (entity.volume) {
+        if (!entity.node && entity.volume) {
             // Create a new node for the entity
             let geometry, material;
             switch (entity.volume.geometry) {
+
+                case 'light':
+                case 'ambientLight':
+                case 'directionalLight':
+
+console.log("adding light",entity)
+
+                     switch (entity.volume.geometry) {                                                                                                                                                       
+                         case 'directionalLight':                                                                                                                                                           
+                             entity.node = new THREE.DirectionalLight(entity.volume.color, entity.volume.intensity);                                                                                                 
+                             break;                                                                                                                                                                    
+                         case 'ambientLight':                                                                                                                                                               
+                             entity.node = new THREE.AmbientLight(entity.volume.color, entity.volume.intensity);                                                                                                     
+                             break;                                                                                                                                                                    
+                         default:                                                                                                                                                                      
+                             delete entity.volume
+                             console.warn(`Unsupported light type: ${entity.volume.lightType}`);                                                                                                              
+                             return;                                                                                                                                                                   
+                     }                                                                                                                                                                                 
+                     break
+
                 case 'box':
                     geometry = new THREE.BoxGeometry(...entity.volume.props);
                     break;
@@ -58,7 +79,6 @@ function visualizeEntities(interpolationRate = 0.1) {
                     break;
                 case 'plane':
                     geometry = new THREE.PlaneGeometry(...entity.volume.props);
-                    entity.position.y += 10
                     break;
                 case 'terrain':
                     geometry = new THREE.PlaneGeometry(...entity.volume.props);
@@ -74,6 +94,7 @@ function visualizeEntities(interpolationRate = 0.1) {
                     break
                 default:
                     console.warn(`Unsupported geometry type: ${entity.volume.geometry}`);
+                    delete entity.volume
                     return;
             }
             material = new THREE.MeshBasicMaterial(entity.volume.material);
@@ -84,6 +105,15 @@ function visualizeEntities(interpolationRate = 0.1) {
             }
             scene.add(entity.node);
         }
+
+        if (entity.node && entity.position) {
+            // Interpolate X, Y, and Z positions
+            entity.node.position.x += (entity.position.x - entity.node.position.x) * interpolationRate;
+            entity.node.position.y += (entity.position.y - entity.node.position.y) * interpolationRate;
+            entity.node.position.z += (entity.position.z - entity.node.position.z) * interpolationRate;
+        }
+
+
     });
 }
 
