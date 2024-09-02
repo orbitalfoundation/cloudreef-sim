@@ -40,6 +40,8 @@ for (const file of agentFiles) {
     for (const [key, value] of Object.entries(module)) {
         if (typeof value === 'object' && value !== null && 'uuid' in value) {
             db.addEntity(value);
+        } else if (typeof value === 'function') {
+            globalThis.systems.push(value);
         }
     }
 }
