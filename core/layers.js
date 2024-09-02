@@ -1,4 +1,4 @@
-export class Layers {
+class Layers {
     constructor(width = 4096, height = 4096) {
         this.width = width;
         this.height = height;
@@ -51,4 +51,8 @@ export class Layers {
         delete this.layers[name];
     }
 }
+
+const config = globalThis.config
+globalThis.layers = new Layers(config.width,config.height);
+
 

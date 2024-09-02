@@ -43,8 +43,7 @@ function createTerrainEntity() {
             props: [width, height, width - 1, height - 1],
             material: { color: 0xd3b683, wireframe: false },
             layer: 'terrain'
-        },
-        rotation: { x: -Math.PI / 2, y: 0, z: 0 }
+        }
     };
     db.addEntity(terrainEntity);
 }

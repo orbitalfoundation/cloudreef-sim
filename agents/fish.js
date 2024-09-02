@@ -14,10 +14,12 @@ export const fishEmitter = {
     }
 };
 
-export function fishMovementSystem(state) {
+ function fishMovementSystem(state) {
     const maxHeadingChange = Math.PI / 4; // Maximum change in heading per update (radians)
     const speed = 0.5; // Speed of the fish
-    const elevationLayer = 'terrain';
+    const width = globalThis.config.width
+    const height = globalThis.config.height
+    const terrain = glbalThis.layers[globalThis.config.terrain]
 
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'fish') {
@@ -35,12 +37,22 @@ export function fishMovementSystem(state) {
             const newX = entity.position.x + Math.cos(entity.heading) * speed;
             const newZ = entity.position.z + Math.sin(entity.heading) * speed;
 
-            // Ensure the fish stays within the water bounds
-            const terrainHeight = layers.getAt(elevationLayer, Math.floor(newX + width / 2), Math.floor(newZ + height / 2));
-            const newY = Math.max(terrainHeight + 1, entity.position.y); // Keep fish above the terrain and below the surface
+            // quick hack - stay in range - this code could be improved using modulo
+            while(newX < 0) newX += width
+            while(newZ < 0) newZ += height
+            while(newX >= width) newX -= width
+            while(newZ >= height) newZ -= height
 
+            // Layer data is ranged from 0-width and 0-height even though the visualization is centered at the origin
+            // Find elevation at this point and make sure the fish stays above the terrain and below the surface
+
+            const layerX = Math.floor(newX + width / 2)
+            const layerY = Math.floor(newZ + height / 2)
+            const terrainHeight = layers.getAt(elevationLayer, layerX, layerY );
+            const newY = Math.max(terrainHeight + 1, entity.position.y);
+
+            // Update position if within bounds
             if (newX >= -width / 2 && newX < width / 2 && newZ >= -height / 2 && newZ < height / 2 && newY <= 0) {
-                // Update position if within bounds
                 entity.position = { x: newX, y: newY, z: newZ };
             }
         }

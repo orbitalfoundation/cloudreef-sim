@@ -1,4 +1,4 @@
-export class DB {
+class DB {
     constructor(layers, config) {
         this.entities = {}; // Object to store entities by UUID
         this.systems = []; // Array to store systems (functions that operate on entities)
@@ -50,7 +50,7 @@ export class DB {
         this.systems = [];
     }
 
-    // Get positions within a certain elevation range
+    // Returns a collection of positions within a certain elevation range where x,y,z are width, height and depth
     getPositionsWithinElevationRange(minElevation, maxElevation, layername='terrain') {
         const positions = [];
         const layer = this.layers.get(layername);
@@ -60,30 +60,30 @@ export class DB {
             return positions;
         }
 
-        for (let y = 0; y < this.config.height; y++) {
+        for (let z = 0; z < this.config.height; z++) {
             for (let x = 0; x < this.config.width; x++) {
-                const index = x + y * this.config.width;
+                const index = x + z * this.config.width;
                 if (index >= layer.length) {
                     console.error(`Index out of range: ${index}, layer length: ${layer.length}`);
                     continue;
                 }
-                const z = layer[index];
-                if (z > minElevation && z <= maxElevation) {
-                    positions.push({ x: x - this.config.width / 2, y: z, z: y - this.config.height / 2 });
+                const y = layer[index];
+                if (y > minElevation && y <= maxElevation) {
+                    positions.push({ x,y,z })
                 }
             }
         }
 
-        console.log(`Found ${positions.length} positions within elevation range ${minElevation}-${maxElevation}`);
+        // console.log(`Found ${positions.length} positions within elevation range ${minElevation}-${maxElevation}`);
         return positions;
     }
 
-    // Get shoreline positions
+    // Get shoreline positions - @todo use values relative to config.waterLevel instead of hardcoded values
     getShorelinePositions(minElevation = 7, maxElevation = 9) {
         return this.getPositionsWithinElevationRange(minElevation, maxElevation);
     }
 
-    // Get land positions above a certain threshold
+    // Get land positions above a certain threshold - @todo use config.waterLevel instead of hardcoded value 10
     getLandPositions(threshold = 10) {
         return this.getPositionsWithinElevationRange(threshold, Infinity);
     }
@@ -112,3 +112,6 @@ export class DB {
         return nearestEntity;
     }
 }
+
+globalThis.db = new DB(globalThis.layers,globalThis.config);
+

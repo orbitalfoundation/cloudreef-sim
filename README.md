@@ -10,28 +10,17 @@ This model is of an island fishing village with people, boats, fish. It is fairl
 
  - one quirk is that the map is from 0,0,width,height but the geometry is centered at the origin... might be nice to consolidate
 
- - also i have set sealevel at 10 due to quirks in perlin noise generation
+ - also i have set sealevel at 10 due to quirks in perlin noise generation ... it is slightly inelegant
+
+ - person home position is kinda hacked - may want to look at
 
  - also lighting seems borked now?
 
- ## behavior
+- right now when boats move the people do not move
 
+- right now boats and fish are placed immediately; we many want to grow them
 
-right now i place boats and fish right away ....
-i think a better way is that there is some kind of emitter rules that creates a new entity
-typically say this could be created where a person is, or where a parent fish is
+- we may want people to harvest trees to do this
 
-so when the simulation starts we might start with only people
-and then they have to chop lumber to accumulate enough lumber to build boats and or buildings
-i could have preferred locations where those kinds of construction projects should take place
-although there is some argument for starting a simulation with some boats and so on
-
-
-but i do think i would prefer a static declaration of an emitter
-rather than having code which produces things in the inclusions
-
-
-
-
- boats should move to a random position at sea nearby
+- people may need to shore fish to have energy also
 
