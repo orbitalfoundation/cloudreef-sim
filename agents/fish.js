@@ -1,39 +1,20 @@
-
-const layers = globalThis.layers
-const scene = globalThis.scene
-const width = globalThis.config.width;
-const height = globalThis.config.height;
-const layer = layers.get('terrain')
-const terrain = globalThis.terrain
-const db = globalThis.db
-
-function place(num = 50) {
-
-    const positions = db.getPositionsWithinElevationRange(1, 9);
-
-    for (let i = 0; i < num; i++) {
-        const randomIndex = Math.floor(Math.random() * positions.length);
-        const position = positions[randomIndex];
-
-        const entity = {
-            uuid: `/fish/${i.toString().padStart(4, '0')}`,
-            type: 'fish',
-            position,
-            waypoint: position,
-            volume: {
-                geometry: 'sphere',
-                props: [1], 
-                material: { color: 0x00d700 } 
-            }
-        };
-
-        db.addEntity(entity);
+export const fishEmitter = {
+    uuid: `/emitter/fish_emitter`,
+    type: 'emitter',
+    minElevation: 1,
+    maxElevation: 9,
+    quantity: 50,
+    spawn: {
+        type: 'fish',
+        volume: {
+            geometry: 'sphere',
+            props: [1],
+            material: { color: 0x00d700 }
+        }
     }
-}
+};
 
-place()
-
-export function fishMovementSystem() {
+export function fishMovementSystem(state) {
     const maxHeadingChange = Math.PI / 4; // Maximum change in heading per update (radians)
     const speed = 0.5; // Speed of the fish
     const elevationLayer = 'terrain';
@@ -66,5 +47,3 @@ export function fishMovementSystem() {
     });
 }
 
-
-globalThis.systems.push( fishMovementSystem )
