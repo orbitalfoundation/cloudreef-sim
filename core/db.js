@@ -1,57 +1,4 @@
 export class DB {
-    constructor() {
-        this.entities = {}; // Object to store entities by UUID
-        this.systems = []; // Array to store systems (functions that operate on entities)
-    }
-
-    // Add an entity to the database
-    addEntity(entity) {
-        if (!entity.uuid) {
-            throw new Error("Entity must have a uuid");
-        }
-        this.entities[entity.uuid] = entity;
-    }
-
-    // Get an entity by UUID
-    getEntity(uuid) {
-        return this.entities[uuid] || null;
-    }
-
-    // Remove an entity by UUID
-    removeEntity(uuid) {
-        delete this.entities[uuid];
-    }
-
-    // Add a system to the database
-    addSystem(system) {
-        if (typeof system === 'function') {
-            this.systems.push(system);
-        } else {
-            throw new Error("System must be a function");
-        }
-    }
-
-    // Execute all systems
-    runSystems(now) {
-        for (const system of this.systems) {
-            system(now);
-        }
-    }
-
-    // Clear all entities
-    clearEntities() {
-        this.entities = {};
-    }
-
-    // Clear all systems
-    clearSystems() {
-        this.systems = [];
-    }
-}
-
-/*
-
-export class DB {
     constructor(layers, config) {
         this.entities = {}; // Object to store entities by UUID
         this.systems = []; // Array to store systems (functions that operate on entities)
@@ -154,6 +101,3 @@ export class DB {
         return nearestEntity;
     }
 }
-
-
-*/

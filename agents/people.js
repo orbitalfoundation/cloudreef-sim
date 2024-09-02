@@ -33,13 +33,12 @@ function placePeople(minPeople = 1, maxPeople = 4) {
 placePeople()
 
 function peopleSystem(state) {
-
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'person') {
             if (state.tick === state.morningTick) {
-                // Find the nearest boat
-                const nearestBoat = findNearestBoat(entity.position);
-                console.log("moving people",entity,nearestBoat)
+                // Find the nearest boat using DB function
+                const nearestBoat = db.findNearestEntityOfType('boat', entity.position);
+                console.log("moving people", entity, nearestBoat);
                 if (nearestBoat) {
                     entity.position = { ...nearestBoat.position }; // Move to the boat
                 }
@@ -54,28 +53,6 @@ function peopleSystem(state) {
     });
 }
 
-function findNearestBoat(personPosition) {
-    let nearestBoat = null;
-    let minDistance = Infinity;
-
-    Object.values(db.entities).forEach(entity => {
-        if (entity.type === 'boat') {
-            const distance = Math.sqrt(
-                Math.pow(personPosition.x - entity.position.x, 2) +
-                Math.pow(personPosition.z - entity.position.z, 2)
-            );
-            if (distance < minDistance) {
-                minDistance = distance;
-                nearestBoat = entity;
-            }
-        }
-    });
-
-    return nearestBoat;
-}
-
-
-
-globalThis.systems.push( peopleSystem )
+globalThis.systems.push(peopleSystem);
 
 
