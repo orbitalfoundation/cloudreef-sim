@@ -56,7 +56,7 @@ function visualizeEntities(interpolationRate = 0.1) {
                     geometry = new THREE.BoxGeometry(...entity.volume.props);
                     break;
                 case 'sphere':
-                    geometry = new THREE.SphereGeometry(entity.volume.props[0] / 2);
+                    geometry = new THREE.SphereGeometry(entity.volume.props[0], 32, 32);
                     break;
                 case 'cylinder':
                     geometry = new THREE.CylinderGeometry(...entity.volume.props);

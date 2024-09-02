@@ -1,13 +1,6 @@
 
 
-const layers = globalThis.layers
-const scene = globalThis.scene
-const width = globalThis.config.width;
-const height = globalThis.config.height;
-const layer = layers.get('terrain')
-const terrain = globalThis.terrain
 const db = globalThis.db
-
 
 function placePeople(minPeople = 1, maxPeople = 4) {
     const buildings = Object.values(db.entities).filter(entity => entity.type === 'building');
@@ -20,7 +13,16 @@ function placePeople(minPeople = 1, maxPeople = 4) {
                 uuid: `/person/${index.toString().padStart(4, '0')}_${i}`,
                 type: 'person',
                 home: building.uuid, // Link person to their home building
-                position: { ...building.position }, // Start at the building's position
+                position: { 
+                    x: building.position.x, 
+                    y: building.position.y + 2.5, // Adjust to place on top of the building
+                    z: building.position.z 
+                },
+                volume: {
+                    geometry: 'sphere',
+                    props: [1], // Radius of 1
+                    material: { color: 0xffd700 } // Gold color for people
+                }
             };
 
             db.addEntity(personEntity);
@@ -29,23 +31,6 @@ function placePeople(minPeople = 1, maxPeople = 4) {
 }
 
 placePeople()
-
-
-function visualizePeople() {
-    const personMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700 }); // Gold color for people
-    const personGeometry = new THREE.SphereGeometry(1, 8, 8); // Simple sphere for person
-
-    Object.values(db.entities).forEach(entity => {
-        if (entity.type === 'person') {
-            const node = new THREE.Mesh(personGeometry, personMaterial);
-            node.position.set(entity.position.x, entity.position.y + 2.5, entity.position.z); // Adjust to place on top of the building
-            terrain.add(node);
-            entity.node = node
-        }
-    });
-}
-
-visualizePeople()
 
 function peopleSystem(state) {
 
