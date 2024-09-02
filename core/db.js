@@ -51,19 +51,30 @@ export class DB {
     }
 
     // Get positions within a certain elevation range
-    getPositionsWithinElevationRange(minElevation, maxElevation) {
+    getPositionsWithinElevationRange(minElevation, maxElevation, layername='terrain') {
         const positions = [];
-        const layer = this.layers.get('terrain');
+        const layer = this.layers.get(layername);
+
+        if (!layer) {
+            console.error(`Layer '${layername}' not found`);
+            return positions;
+        }
 
         for (let y = 0; y < this.config.height; y++) {
             for (let x = 0; x < this.config.width; x++) {
-                const z = layer[x + y * this.config.width];
+                const index = x + y * this.config.width;
+                if (index >= layer.length) {
+                    console.error(`Index out of range: ${index}, layer length: ${layer.length}`);
+                    continue;
+                }
+                const z = layer[index];
                 if (z > minElevation && z <= maxElevation) {
                     positions.push({ x: x - this.config.width / 2, y: z, z: y - this.config.height / 2 });
                 }
             }
         }
 
+        console.log(`Found ${positions.length} positions within elevation range ${minElevation}-${maxElevation}`);
         return positions;
     }
 
