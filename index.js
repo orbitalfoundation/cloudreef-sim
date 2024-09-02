@@ -63,6 +63,9 @@ function visualizeEntities(interpolationRate = 0.1) {
                 case 'cylinder':
                     geometry = new THREE.CylinderGeometry(...entity.volume.props);
                     break;
+                case 'plane':
+                    geometry = new THREE.PlaneGeometry(...entity.volume.props);
+                    break;
                 default:
                     console.warn(`Unsupported geometry type: ${entity.volume.geometry}`);
                     return;
@@ -70,6 +73,9 @@ function visualizeEntities(interpolationRate = 0.1) {
             material = new THREE.MeshBasicMaterial(entity.volume.material);
             entity.node = new THREE.Mesh(geometry, material);
             entity.node.position.set(entity.position.x, entity.position.y, entity.position.z);
+            if (entity.rotation) {
+                entity.node.rotation.set(entity.rotation.x, entity.rotation.y, entity.rotation.z);
+            }
             terrain.add(entity.node);
         }
     });
