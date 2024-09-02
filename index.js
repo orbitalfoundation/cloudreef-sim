@@ -15,33 +15,24 @@ const db = globalThis.db = new DB(layers,config);
 
 globalThis.systems = []
 
-await import('./agents/terrain.js')
+import { updateTerrainGeometry } from './agents/terrain.js';
 
-await import('./agents/ocean.js')
-
-await import('./agents/trees.js')
-
-await import('./agents/buildings.js')
-
-await import('./agents/people.js')
-
-await import('./agents/boats.js')
-
+await import('./agents/terrain.js');
+await import('./agents/ocean.js');
+await import('./agents/trees.js');
+await import('./agents/buildings.js');
+await import('./agents/people.js');
+await import('./agents/boats.js');
 //await import('./agents/fish.js')
 
-const terrain = globalThis.terrain
-
-
-
-///////////////////
+const scene = globalThis.scene;
 
 const state = {
-	tick:0,
-	ticksPerDay: 1000,
-	morningTick: 333,
-	eveningTick: 666
-}
-
+    tick: 0,
+    ticksPerDay: 1000,
+    morningTick: 333,
+    eveningTick: 666
+};
 
 function visualizeEntities(interpolationRate = 0.1) {
     Object.values(db.entities).forEach(entity => {
@@ -76,7 +67,12 @@ function visualizeEntities(interpolationRate = 0.1) {
             if (entity.rotation) {
                 entity.node.rotation.set(entity.rotation.x, entity.rotation.y, entity.rotation.z);
             }
-            terrain.add(entity.node);
+            scene.add(entity.node);
+
+            // Special handling for terrain entity
+            if (entity.type === 'terrain') {
+                updateTerrainGeometry(entity.node.geometry);
+            }
         }
     });
 }
