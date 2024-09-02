@@ -2,4 +2,6 @@ A reef simulation - exercising aider/cursor and claude sonnet for big block code
 
 This model is of an island fishing village with people, boats, fish. It is fairly simple. Uses 3js for visualization.
 
+![reef](reef.png?raw=true "reef")
+
 
