@@ -100,15 +100,4 @@ export class DB {
 
         return nearestEntity;
     }
-
-    // Get entities within a certain radius of a given position
-    getEntitiesWithinRadius(type, position, radius) {
-        return this.getEntitiesByType(type).filter(entity => {
-            const distance = Math.sqrt(
-                Math.pow(position.x - entity.position.x, 2) +
-                Math.pow(position.z - entity.position.z, 2)
-            );
-            return distance <= radius;
-        });
-    }
 }

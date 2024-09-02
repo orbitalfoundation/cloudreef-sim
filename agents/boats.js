@@ -16,7 +16,7 @@ function place(num = 50) {
             type: 'boat',
             position,
             waypoint: position,
-            volume: { geometry: 'box', whd: [1, 1, 1], material: { color: '0x0000ff' } }
+            volume: { geometry: 'box', props: [3, 5, 3], material: { color: '0x444488' } }
         };
 
         db.addEntity(entity);
