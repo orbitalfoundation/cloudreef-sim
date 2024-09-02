@@ -35,6 +35,10 @@ const agentFiles = [
     './agents/emitter.js'
 ];
 
+// Ensure peopleEmitter is added to the database
+import { peopleEmitter } from './agents/people.js';
+db.addEntity(peopleEmitter);
+
 for (const file of agentFiles) {
     const module = await import(file);
     for (const [key, value] of Object.entries(module)) {

@@ -1,38 +1,37 @@
+const db = globalThis.db;
+const peopleElevation = 2.5;
 
-
-const db = globalThis.db
-
-function placePeople(minPeople = 1, maxPeople = 4) {
-    const buildings = Object.values(db.entities).filter(entity => entity.type === 'building');
-
-    buildings.forEach((building, index) => {
-        const numPeople = Math.floor(Math.random() * (maxPeople - minPeople + 1)) + minPeople;
-
-        for (let i = 0; i < numPeople; i++) {
-            const personEntity = {
-                uuid: `/person/${index.toString().padStart(4, '0')}_${i}`,
-                type: 'person',
-                home: building.uuid, // Link person to their home building
-                position: { 
-                    x: building.position.x, 
-                    y: building.position.y + 2.5, // Adjust to place on top of the building
-                    z: building.position.z 
-                },
-                volume: {
-                    geometry: 'sphere',
-                    props: [1], // Radius of 1
-                    material: { color: 0xffd700 } // Gold color for people
-                }
-            };
-
-            db.addEntity(personEntity);
+export const peopleEmitter = {
+    uuid: `/emitter/people_emitter`,
+    type: 'emitter',
+    targetEntityType: 'building',
+    quantity: 100, // Total number of people to generate
+    spawn: {
+        type: 'person',
+        volume: {
+            geometry: 'sphere',
+            props: [1], // Radius of 1
+            material: { color: 0xffd700 } // Gold color for people
         }
-    });
-}
-
-placePeople()
+    }
+};
 
 export function peopleSystem(state) {
+    // Assign homes to people who don't have one
+    Object.values(db.entities).forEach(entity => {
+        if (entity.type === 'person' && !entity.home) {
+            const buildings = db.getEntitiesByType('building');
+            if (buildings.length > 0) {
+                const randomBuilding = buildings[Math.floor(Math.random() * buildings.length)];
+                entity.home = randomBuilding.uuid;
+                entity.position = {
+                    x: randomBuilding.position.x,
+                    y: randomBuilding.position.y + peopleElevation,
+                    z: randomBuilding.position.z
+                };
+            }
+        }
+    });
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'person') {
             if (state.tick === state.morningTick) {
@@ -48,7 +47,7 @@ export function peopleSystem(state) {
                 const homeBuilding = db.getEntity(entity.home);
                 if (homeBuilding) {
                     entity.position = { ...homeBuilding.position };
-                    entity.position.y += 2.5
+                    entity.position.y += peopleElevation
                 }
             }
         }
