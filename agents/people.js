@@ -32,7 +32,7 @@ function placePeople(minPeople = 1, maxPeople = 4) {
 
 placePeople()
 
-function peopleSystem(state) {
+export function peopleSystem(state) {
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'person') {
             if (state.tick === state.morningTick) {
@@ -54,7 +54,5 @@ function peopleSystem(state) {
         }
     });
 }
-
-globalThis.systems.push(peopleSystem);
 
 
