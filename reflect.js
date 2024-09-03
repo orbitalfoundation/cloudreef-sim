@@ -22,7 +22,7 @@ function updateEntityTable() {
         });
 
         const headerRow = entityTable.insertRow();
-        const headers = ['UUID', 'Type'].map(text => {
+        const headers = ['UUID', 'Type', 'Position X', 'Position Y', 'Position Z'].map(text => {
             const cell = headerRow.insertCell();
             cell.textContent = text;
             Object.assign(cell.style, {
@@ -49,12 +49,27 @@ function updateEntityTable() {
         const row = entityTable.insertRow();
         const uuidCell = row.insertCell(0);
         const typeCell = row.insertCell(1);
+        const posXCell = row.insertCell(2);
+        const posYCell = row.insertCell(3);
+        const posZCell = row.insertCell(4);
+
         uuidCell.textContent = entity.uuid;
         typeCell.textContent = entity.type || 'N/A';
-        uuidCell.style.border = '1px solid black';
-        typeCell.style.border = '1px solid black';
-        uuidCell.style.padding = '5px';
-        typeCell.style.padding = '5px';
+        
+        if (entity.position) {
+            posXCell.textContent = entity.position.x.toFixed(2);
+            posYCell.textContent = entity.position.y.toFixed(2);
+            posZCell.textContent = entity.position.z.toFixed(2);
+        } else {
+            posXCell.textContent = 'N/A';
+            posYCell.textContent = 'N/A';
+            posZCell.textContent = 'N/A';
+        }
+
+        [uuidCell, typeCell, posXCell, posYCell, posZCell].forEach(cell => {
+            cell.style.border = '1px solid black';
+            cell.style.padding = '5px';
+        });
     });
 }
 
