@@ -1,10 +1,12 @@
 const db = globalThis.db;
+const config = globalThis.config;
 const peopleElevation = 2.5;
 
 export const peopleEmitter = {
     uuid: `/emitter/people_emitter`,
     type: 'emitter',
-    targetEntityType: 'building',
+    minElevation: config.waterLevel,
+    maxElevation: Infinity,
     quantity: 100, // Total number of people to generate
     spawn: {
         type: 'person',
@@ -17,37 +19,31 @@ export const peopleEmitter = {
 };
 
 export function peopleSystem(state) {
-    // Assign homes to people who don't have one
-    Object.values(db.entities).forEach(entity => {
-        if (entity.type === 'person' && !entity.home) {
-            const buildings = db.getEntitiesByType('building');
-            if (buildings.length > 0) {
-                const randomBuilding = buildings[Math.floor(Math.random() * buildings.length)];
-                entity.home = randomBuilding.uuid;
-                entity.position = {
-                    x: randomBuilding.position.x,
-                    y: randomBuilding.position.y + peopleElevation,
-                    z: randomBuilding.position.z
-                };
-            }
-        }
-    });
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'person') {
             if (state.tick === state.morningTick) {
-                // Find the nearest boat using DB function
+                // Find the nearest boat
                 const nearestBoat = db.findNearestEntityOfType(entity.position, 'boat');
                 if (nearestBoat) {
-                    entity.position = { ...nearestBoat.position }; // Move to the boat
+                    entity.position = { 
+                        x: nearestBoat.position.x, 
+                        y: nearestBoat.position.y + peopleElevation, 
+                        z: nearestBoat.position.z 
+                    };
                 } else {
-                    console.error("no boat")
+                    console.error("No boat found for person");
                 }
             } else if (state.tick === state.eveningTick) {
-                // Move back home
-                const homeBuilding = db.getEntity(entity.home);
-                if (homeBuilding) {
-                    entity.position = { ...homeBuilding.position };
-                    entity.position.y += peopleElevation
+                // Find the nearest building
+                const nearestBuilding = db.findNearestEntityOfType(entity.position, 'building');
+                if (nearestBuilding) {
+                    entity.position = { 
+                        x: nearestBuilding.position.x, 
+                        y: nearestBuilding.position.y + peopleElevation, 
+                        z: nearestBuilding.position.z 
+                    };
+                } else {
+                    console.error("No building found for person");
                 }
             }
         }
