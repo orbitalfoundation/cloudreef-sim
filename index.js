@@ -48,7 +48,9 @@ function advanceSimulation() {
 
     // Log analytics every 100 ticks
     if (state.tick % 100 === 0) {
-        console.log('Analytics:', getAnalytics());
+        const analytics = getAnalytics();
+        console.log('Analytics - Counts:', analytics.counts);
+        console.log('Analytics - Totals:', analytics.totals);
     }
 }
 
