@@ -1,4 +1,5 @@
 let entityTable;
+let isTableVisible = false;
 
 function updateEntityTable() {
     if (!entityTable) {
@@ -9,7 +10,8 @@ function updateEntityTable() {
             left: '10px',
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
             border: '1px solid black',
-            borderCollapse: 'collapse'
+            borderCollapse: 'collapse',
+            display: 'none'
         });
 
         const headerRow = entityTable.insertRow();
@@ -44,6 +46,17 @@ function updateEntityTable() {
         typeCell.style.padding = '5px';
     });
 }
+
+function toggleEntityTable() {
+    isTableVisible = !isTableVisible;
+    entityTable.style.display = isTableVisible ? 'table' : 'none';
+}
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        toggleEntityTable();
+    }
+});
 
 // Update the entity table every second
 setInterval(updateEntityTable, 1000);
