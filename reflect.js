@@ -1,6 +1,6 @@
 let entityTable;
 
-function createEntityTable() {
+function updateEntityTable() {
     if (!entityTable) {
         entityTable = document.createElement('table');
         Object.assign(entityTable.style, {
@@ -46,4 +46,4 @@ function createEntityTable() {
 }
 
 // Update the entity table every second
-setInterval(createEntityTable, 1000);
+setInterval(updateEntityTable, 1000);
