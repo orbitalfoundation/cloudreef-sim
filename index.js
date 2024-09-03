@@ -35,7 +35,8 @@ const state = {
     tick: 0,
     ticksPerDay: 1000,
     morningTick: 333,
-    eveningTick: 666
+    eveningTick: 666,
+    daysPassed: 0
 };
 
 import { getAnalytics } from './analytics.js';
@@ -46,6 +47,12 @@ function advanceSimulation() {
     })
 
     state.tick = (state.tick + 1) % state.ticksPerDay;
+
+    // Increment daysPassed when a full day cycle completes
+    if (state.tick === 0) {
+        state.daysPassed++;
+        console.log(`Day ${state.daysPassed} has passed`);
+    }
 
     // Log analytics every 100 ticks
     if (state.tick % 100 === 0) {
