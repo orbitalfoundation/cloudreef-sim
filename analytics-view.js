@@ -13,12 +13,17 @@ function createAnalyticsView() {
         top: '10px',
         right: '10px',
         width: '300px',
-        height: '200px',
+        height: '230px',
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         border: '1px solid black',
         padding: '10px',
         zIndex: '1000'
     });
+
+    const timeInfo = document.createElement('div');
+    timeInfo.id = 'time-info';
+    timeInfo.style.marginBottom = '10px';
+    container.appendChild(timeInfo);
 
     const canvas = document.createElement('canvas');
     canvas.width = 280;
@@ -27,13 +32,17 @@ function createAnalyticsView() {
 
     document.body.appendChild(container);
 
-    return canvas;
+    return { canvas, timeInfo };
 }
 
-function updateAnalyticsView(canvas) {
+function updateAnalyticsView(canvas, timeInfo) {
     const ctx = canvas.getContext('2d');
     const analytics = getAnalytics();
+    const { yearsPassed, daysPassed, daysPerYear } = globalThis.state;
     
+    // Update time information
+    timeInfo.textContent = `Year: ${yearsPassed + 1}, Day: ${(daysPassed % daysPerYear) + 1}`;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const entityTypes = Object.keys(analytics);
@@ -63,5 +72,5 @@ function updateAnalyticsView(canvas) {
     });
 }
 
-const analyticsCanvas = createAnalyticsView();
-setInterval(() => updateAnalyticsView(analyticsCanvas), 1000);
+const { canvas: analyticsCanvas, timeInfo } = createAnalyticsView();
+setInterval(() => updateAnalyticsView(analyticsCanvas, timeInfo), 1000);

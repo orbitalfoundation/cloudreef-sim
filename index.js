@@ -36,7 +36,9 @@ const state = {
     ticksPerDay: 1000,
     morningTick: 333,
     eveningTick: 666,
-    daysPassed: 0
+    daysPassed: 0,
+    daysPerYear: 10,
+    yearsPassed: 0
 };
 
 import { getAnalytics } from './analytics.js';
@@ -52,6 +54,12 @@ function advanceSimulation() {
     if (state.tick === 0) {
         state.daysPassed++;
         console.log(`Day ${state.daysPassed} has passed`);
+
+        // Check if a year has passed
+        if (state.daysPassed % state.daysPerYear === 0) {
+            state.yearsPassed++;
+            console.log(`Year ${state.yearsPassed} has passed`);
+        }
     }
 
     // Log analytics every 100 ticks
