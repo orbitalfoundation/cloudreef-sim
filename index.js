@@ -15,6 +15,7 @@ const files = [
     './agents/fish.js',
     './reflect.js',
     './analytics.js',
+    './analytics-view.js',
 ];
 
 globalThis.systems = []
