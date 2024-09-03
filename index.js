@@ -16,6 +16,7 @@ const files = [
     './reflect.js',
     './analytics.js',
     './analytics-view.js',
+    './hud.js',
 ];
 
 globalThis.systems = []
@@ -42,6 +43,9 @@ const state = {
 };
 
 import { getAnalytics } from './analytics.js';
+import { createHUD, updateHUD } from './hud.js';
+
+const hudElement = createHUD();
 
 function advanceSimulation() {
     globalThis.systems.forEach(system => {
@@ -61,6 +65,9 @@ function advanceSimulation() {
             console.log(`Year ${state.yearsPassed} has passed`);
         }
     }
+
+    // Update HUD
+    updateHUD(hudElement, state);
 
     // Log analytics every 100 ticks
     if (state.tick % 100 === 0) {
