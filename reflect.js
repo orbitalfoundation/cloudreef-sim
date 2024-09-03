@@ -3,15 +3,22 @@ let isTableVisible = false;
 
 function updateEntityTable() {
     if (!entityTable) {
-        entityTable = document.createElement('table');
-        Object.assign(entityTable.style, {
+        const tableContainer = document.createElement('div');
+        Object.assign(tableContainer.style, {
             position: 'absolute',
             top: '10px',
             left: '10px',
+            maxHeight: 'calc(100vh - 20px)',
+            overflowY: 'auto',
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
             border: '1px solid black',
-            borderCollapse: 'collapse',
             display: 'none'
+        });
+
+        entityTable = document.createElement('table');
+        Object.assign(entityTable.style, {
+            borderCollapse: 'collapse',
+            width: '100%'
         });
 
         const headerRow = entityTable.insertRow();
@@ -21,12 +28,16 @@ function updateEntityTable() {
             Object.assign(cell.style, {
                 fontWeight: 'bold',
                 border: '1px solid black',
-                padding: '5px'
+                padding: '5px',
+                position: 'sticky',
+                top: '0',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)'
             });
             return cell;
         });
 
-        document.body.appendChild(entityTable);
+        tableContainer.appendChild(entityTable);
+        document.body.appendChild(tableContainer);
     }
 
     // Clear existing rows (except header)
@@ -49,7 +60,7 @@ function updateEntityTable() {
 
 function toggleEntityTable() {
     isTableVisible = !isTableVisible;
-    entityTable.style.display = isTableVisible ? 'table' : 'none';
+    entityTable.parentElement.style.display = isTableVisible ? 'block' : 'none';
 }
 
 document.addEventListener('keydown', (event) => {
