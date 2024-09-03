@@ -7,9 +7,10 @@ export const peopleEmitter = {
     type: 'emitter',
     minElevation: config.waterLevel,
     maxElevation: Infinity,
-    quantity: 100, // Total number of people to generate
+    quantity: 10, // Total number of people to generate
     spawn: {
         type: 'person',
+        age: 0, // Start with age 0
         volume: {
             geometry: 'sphere',
             props: [1], // Radius of 1
@@ -21,6 +22,22 @@ export const peopleEmitter = {
 export function peopleSystem(state) {
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'person') {
+            // Increment age every day
+            if (state.tick === 0) {
+                entity.age = (entity.age || 0) + 1;
+            }
+
+            // Delete people over 30 years old
+            if (entity.age > 30) {
+                db.removeEntity(entity.uuid);
+                return;
+            }
+
+            // People less than 10 years old don't move
+            if (entity.age < 10) {
+                return;
+            }
+
             if (state.tick === state.morningTick) {
                 // Find the nearest boat
                 const nearestBoat = db.findNearestEntityOfType(entity.position, 'boat');
