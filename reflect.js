@@ -3,24 +3,26 @@ let entityTable;
 function createEntityTable() {
     if (!entityTable) {
         entityTable = document.createElement('table');
-        entityTable.style.position = 'absolute';
-        entityTable.style.top = '10px';
-        entityTable.style.left = '10px';
-        entityTable.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-        entityTable.style.border = '1px solid black';
-        entityTable.style.borderCollapse = 'collapse';
+        Object.assign(entityTable.style, {
+            position: 'absolute',
+            top: '10px',
+            left: '10px',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            border: '1px solid black',
+            borderCollapse: 'collapse'
+        });
 
         const headerRow = entityTable.insertRow();
-        const uuidHeader = headerRow.insertCell(0);
-        const typeHeader = headerRow.insertCell(1);
-        uuidHeader.textContent = 'UUID';
-        typeHeader.textContent = 'Type';
-        uuidHeader.style.fontWeight = 'bold';
-        typeHeader.style.fontWeight = 'bold';
-        uuidHeader.style.border = '1px solid black';
-        typeHeader.style.border = '1px solid black';
-        uuidHeader.style.padding = '5px';
-        typeHeader.style.padding = '5px';
+        const headers = ['UUID', 'Type'].map(text => {
+            const cell = headerRow.insertCell();
+            cell.textContent = text;
+            Object.assign(cell.style, {
+                fontWeight: 'bold',
+                border: '1px solid black',
+                padding: '5px'
+            });
+            return cell;
+        });
 
         document.body.appendChild(entityTable);
     }
