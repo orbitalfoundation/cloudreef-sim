@@ -13,6 +13,7 @@ const files = [
     './agents/lights.js',
     './agents/emitter.js',
     './agents/fish.js',
+    './reflect.js',
 ];
 
 globalThis.systems = []
