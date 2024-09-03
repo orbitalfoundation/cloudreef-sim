@@ -14,6 +14,7 @@ const files = [
     './agents/emitter.js',
     './agents/fish.js',
     './reflect.js',
+    './analytics.js',
 ];
 
 globalThis.systems = []
@@ -36,13 +37,19 @@ const state = {
     eveningTick: 666
 };
 
-function advanceSimulation() {
+import { getAnalytics } from './analytics.js';
 
-    globalThis.systems.forEach(system=>{
-    	system(state)
+function advanceSimulation() {
+    globalThis.systems.forEach(system => {
+        system(state)
     })
 
     state.tick = (state.tick + 1) % state.ticksPerDay;
+
+    // Log analytics every 100 ticks
+    if (state.tick % 100 === 0) {
+        console.log('Analytics:', getAnalytics());
+    }
 }
 
 setInterval(advanceSimulation, 10); 
