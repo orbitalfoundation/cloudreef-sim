@@ -16,7 +16,7 @@ const files = [
     './reflect.js',
     './analytics.js',
     './analytics-view.js',
-    './hud.js',
+//    './hud.js',
 ];
 
 globalThis.systems = []
@@ -33,13 +33,16 @@ for (const file of files) {
 }
 
 const state = {
-    tick: 0,
-    ticksPerDay: 1000,
-    morningTick: 333,
-    eveningTick: 666,
-    daysPassed: 0,
-    daysPerYear: 10,
-    yearsPassed: 0
+    seconds: 0,
+    days: 0,
+    years: 0,
+
+    secondsPerDay: 86400,
+    secondsStepRate: 86400 / 24,
+    daysPerYear: 360,
+    daysStepRate: 30,
+    morningSeconds: 60 * 60 * 8,
+    eveningSeconds: 60 * 60 * 16,
 };
 
 import { getAnalytics } from './analytics.js';
@@ -50,33 +53,34 @@ const hudElement = createHUD();
 function advanceSimulation() {
     globalThis.systems.forEach(system => {
         system(state)
-    })
+    });
 
-    state.tick = (state.tick + 1) % state.ticksPerDay;
+    state.seconds += state.secondsStepRate;
 
-    // Increment daysPassed when a full day cycle completes
-    if (state.tick === 0) {
-        state.daysPassed++;
-        console.log(`Day ${state.daysPassed} has passed`);
+    // Increment days when a full day cycle completes
+    if (state.seconds >= state.secondsPerDay) {
+        state.days++;
+        state.seconds %= state.secondsPerDay;
+        console.log(`Day ${state.days} has passed`);
 
         // Check if a year has passed
-        if (state.daysPassed % state.daysPerYear === 0) {
-            state.yearsPassed++;
-            console.log(`Year ${state.yearsPassed} has passed`);
+        if (state.days % state.daysPerYear === 0) {
+            state.years++;
+            console.log(`Year ${state.years} has passed`);
         }
     }
 
     // Update HUD
     updateHUD(hudElement, state);
 
-    // Log analytics every 100 ticks
-    if (state.tick % 100 === 0) {
+    // Log analytics every hour (3600 seconds)
+    if (Math.floor(state.seconds / 3600) !== Math.floor((state.seconds - state.secondsStepRate) / 3600)) {
         const analytics = getAnalytics();
         console.log('Analytics - Entity Totals Over Time:', analytics);
     }
 }
 
-setInterval(advanceSimulation, 10); 
+setInterval(advanceSimulation, 1000); // Run every second in real-time
 
 
 
