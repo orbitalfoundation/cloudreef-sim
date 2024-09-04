@@ -10,7 +10,9 @@ export const peopleEmitter = {
     quantity: 10, // Total number of people to generate
     spawn: {
         type: 'person',
-        age: 0, // Start with age 0
+        birthTick: 0,
+        birthDay: 0,
+        birthYear: 0,
         volume: {
             geometry: 'sphere',
             props: [1], // Radius of 1
@@ -22,19 +24,26 @@ export const peopleEmitter = {
 export function peopleSystem(state) {
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'person') {
-            // Increment age every day
-            if (state.tick === 0) {
-                entity.age = (entity.age || 0) + 1;
+            // Set birth information for new entities
+            if (entity.birthYear === undefined) {
+                entity.birthTick = state.tick;
+                entity.birthDay = state.daysPassed;
+                entity.birthYear = state.yearsPassed;
             }
 
+            // Calculate age in years
+            const age = state.yearsPassed - entity.birthYear + 
+                        (state.daysPassed - entity.birthDay) / state.daysPerYear +
+                        (state.tick - entity.birthTick) / (state.ticksPerDay * state.daysPerYear);
+
             // Delete people over 30 years old
-            if (entity.age > 30) {
+            if (age > 30) {
                 db.removeEntity(entity.uuid);
                 return;
             }
 
             // People less than 10 years old don't move
-            if (entity.age < 10) {
+            if (age < 10) {
                 return;
             }
 
