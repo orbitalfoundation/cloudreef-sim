@@ -5,6 +5,7 @@ function createHUD() {
         position: 'fixed',
         top: '20px',
         left: '20px',
+        color: 'white',
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
         color: 'white',
         padding: '15px',
@@ -20,15 +21,15 @@ function createHUD() {
 }
 
 function updateHUD(hudElement, state) {
-    const { yearsPassed, daysPassed, daysPerYear, tick, ticksPerDay } = state;
-    const currentDay = (daysPassed % daysPerYear) + 1;
-    const currentHour = Math.floor((tick / ticksPerDay) * 24);
-    const currentMinute = Math.floor(((tick % (ticksPerDay / 24)) / (ticksPerDay / 24)) * 60);
+    const { years, dayOfYear, hourOfDay, secondOfDay, daysPerYear } = state;
+    const currentDay = dayOfYear + 1;
+    const currentMinute = Math.floor((secondOfDay % 3600) / 60);
+    const currentSecond = secondOfDay % 60;
 
     hudElement.innerHTML = `
-        <div>Year: ${yearsPassed + 1}</div>
-        <div>Day: ${currentDay}</div>
-        <div>Time: ${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}</div>
+        <div>Year: ${years + 1}</div>
+        <div>Day: ${currentDay}/${daysPerYear}</div>
+        <div>Time: ${hourOfDay.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}:${currentSecond.toString().padStart(2, '0')}</div>
     `;
 }
 

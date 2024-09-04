@@ -34,8 +34,13 @@ for (const file of files) {
 
 const state = {
     seconds: 0,
+    hours: 0,
     days: 0,
     years: 0,
+
+    secondOfDay: 0,
+    hourOfDay: 0,
+    dayOfYear: 0,
 
     secondsPerDay: 86400,
     secondsStepRate: 86400 / 24,
@@ -56,15 +61,18 @@ function advanceSimulation() {
     });
 
     state.seconds += state.secondsStepRate;
+    state.secondOfDay = state.seconds % state.secondsPerDay;
+    state.hourOfDay = Math.floor(state.secondOfDay / 3600);
+    state.hours = Math.floor(state.seconds / 3600);
 
     // Increment days when a full day cycle completes
-    if (state.seconds >= state.secondsPerDay) {
+    if (state.secondOfDay < state.secondsStepRate) {
         state.days++;
-        state.seconds %= state.secondsPerDay;
+        state.dayOfYear = (state.dayOfYear + 1) % state.daysPerYear;
         console.log(`Day ${state.days} has passed`);
 
         // Check if a year has passed
-        if (state.days % state.daysPerYear === 0) {
+        if (state.dayOfYear === 0) {
             state.years++;
             console.log(`Year ${state.years} has passed`);
         }
@@ -73,8 +81,8 @@ function advanceSimulation() {
     // Update HUD
     updateHUD(hudElement, state);
 
-    // Log analytics every hour (3600 seconds)
-    if (Math.floor(state.seconds / 3600) !== Math.floor((state.seconds - state.secondsStepRate) / 3600)) {
+    // Log analytics every hour
+    if (state.secondOfDay % 3600 < state.secondsStepRate) {
         const analytics = getAnalytics();
         console.log('Analytics - Entity Totals Over Time:', analytics);
     }
