@@ -24,7 +24,7 @@ const hudElement = createHUD()
 const time = globalThis.time
 
 export function updateHUD() {
-    const { years, dayOfYear, hourOfDay, secondOfDay, daysPerYear } = time;
+    const { years, dayOfYear, hourOfDay, secondOfDay, daysPerYear, seconds } = time;
     const currentDay = dayOfYear + 1;
     const currentMinute = Math.floor((secondOfDay % 3600) / 60);
     const currentSecond = secondOfDay % 60;
@@ -33,6 +33,7 @@ export function updateHUD() {
         <div>Year: ${years + 1}</div>
         <div>Day: ${currentDay}/${daysPerYear}</div>
         <div>Time: ${hourOfDay.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}:${currentSecond.toString().padStart(2, '0')}</div>
+        <div>Total Seconds: ${seconds}</div>
     `;
 }
 
