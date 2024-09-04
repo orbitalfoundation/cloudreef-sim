@@ -77,15 +77,15 @@ export function updateEntities() {
 					 break
 				case 'box':
 					geometry = new THREE.BoxGeometry(...entity.volume.props);
-					entity.node = new THREE.Mesh(geometry, material || new THREE.MeshPhongMaterial({ color: 0xcccccc }));
+					entity.node = new THREE.Mesh(geometry, material);
 					break;
 				case 'sphere':
 					geometry = new THREE.SphereGeometry(entity.volume.props[0], 32, 32);
-					entity.node = new THREE.Mesh(geometry, material || new THREE.MeshPhongMaterial({ color: 0xcccccc }));
+					entity.node = new THREE.Mesh(geometry, material);
 					break;
 				case 'cylinder':
 					geometry = new THREE.CylinderGeometry(...entity.volume.props);
-					entity.node = new THREE.Mesh(geometry, material || new THREE.MeshPhongMaterial({ color: 0xcccccc }));
+					entity.node = new THREE.Mesh(geometry, material);
 					break;
 				case 'plane':
 					// @note planes must cover the number space of the extent of the playing area - so are not centered
