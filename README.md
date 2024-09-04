@@ -8,67 +8,49 @@ This model is of an island fishing village with people, boats, fish. It is fairl
 
 ## bugs
 
-~ planes geometries were moved to be not at the center but at a corner, and then the entire view was pulled back to center; this could still use some parameterization since it is hardcoded in vis.js
+	~ sealevel could ideally be at zero - it just would be cleaner if that was the case - however right now the terrain is arranged so that it starts at 0 and extends upwards - so a bit of tidying up is needed
 
-~ sealevel could ideally be at zero - it just would be cleaner if that was the case - however right now the terrain is arranged so that it starts at 0 and extends upwards - so a bit of tidying up is needed
+	- ecs improvements
+		- don't have entity types just components
+		- move position to be inside volume
+		- allow lights to have richer geometry
+		- do not use props from making geometries
+		- material indicate flavor such as phong
 
-- right now persons and other entities don't have a correct memoization of their starting position; this could use improvement
+	- view
+		- first person
+		- adjust scales of entities to be human scale
+		- improve analytics
+		- auto comment
+		- auto docs
+		- regression tests unit tests
+		- move to typescript with rollup or esbuild
 
-- lighting?
+## revise play
 
+	- people
+		- right now persons and other entities don't have a correct memoization of their starting position; this could use improvement
+		- people have a lifespan
+		- people have energy budget
+		- people harvest fish for energy
+		- people die
+		- people give birth
+		- people have childhoods
+		- people harvest trees to build boats
+		- people harvest trees to build shelter
+		- people have some kind of affinity to a home and or work
 
+	- boats
+		- people should move with boats
+		- harvest actual fish
 
-// @todo i would rather not have types at all
-// @todo position should be in volume
-// @todo i would rather not have props but have explicit fields
-// @todo material may want to indicate flavor such as phong
+	- fish
+		- flock
+		- have a plankton layer or bloom layer
+		- change elevation
+		- die / reproduce
 
-
-
-## architecture / deeper design to revise
-
-- right now entities have a 'type' - instead they really should just have components
-
-- when people are on a boat they could / should move with the boat ? think about how i want to do that
-
-- systems probaby should be objects with an associated observer or behavior rather than naked functions so they can have state
-
-# gameplay
-
-- have people harvest fish from the shore for energy to start with
-
-- have people harvest trees to build boats
-
-- and homes
-
-- corals should grow; and become fish nurseries
-
-- a first person view would be nice
-
-# other debugging and analytics
-
-- debugging displays to show all entities and all systems
-
-- analytics
-
-# lifecycles , timing
-
-	- 24 ticks per day - can run at 10ms per tick - so that is 240 ms, or about 4 ticks per second, or 2.25 seconds per day
-	- 10 days per year for now -> so about 20 seconds per year
-
-
-
-- fish fission at a rate
-
-- maybe there is a cap? can we visualize the food resources for fish? can those grow back?
-
-- fish die at a rate
-
-
-
-
-
-
-
-
+	- corals
+		- grow
+		-
 
