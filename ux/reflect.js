@@ -75,7 +75,7 @@ function updateEntityTable() {
 
 function toggleEntityTable() {
     isTableVisible = !isTableVisible;
-    entityTable.parentElement.style.display = isTableVisible ? 'block' : 'none';
+    entityTable.style.display = isTableVisible ? 'block' : 'none';
 }
 
 document.addEventListener('keydown', (event) => {

@@ -1,5 +1,7 @@
+
 const db = globalThis.db;
 const config = globalThis.config;
+const time = globalThis.time;
 const peopleElevation = 2.5;
 
 export const peopleEmitter = {
@@ -21,33 +23,22 @@ export const peopleEmitter = {
     }
 };
 
-export function peopleSystem(state) {
+export function peopleSystem() {
     Object.values(db.entities).forEach(entity => {
         if (entity.type === 'person') {
-            // Set birth information for new entities
-            if (entity.birthYear === undefined) {
-                entity.birthTick = state.tick;
-                entity.birthDay = state.daysPassed;
-                entity.birthYear = state.yearsPassed;
-            }
-
-            // Calculate age in years
-            const age = state.yearsPassed - entity.birthYear + 
-                        (state.daysPassed - entity.birthDay) / state.daysPerYear +
-                        (state.tick - entity.birthTick) / (state.ticksPerDay * state.daysPerYear);
-
-            // Delete people over 30 years old
-            if (age > 30) {
-                db.removeEntity(entity.uuid);
-                return;
-            }
 
             // People less than 10 years old don't move
-            if (age < 10) {
+            if (entity.createdAt + config.secondsPerYear * 10 > config.seconds ) {
                 return;
             }
 
-            if (state.tick === state.morningTick) {
+            // Mark people over 30 for deletion
+            if (entity.createdAt + config.secondsPerYear * 30 < config.seconds) {
+                entity.obliterate = true
+                return;
+            }
+
+            if (time.secondOfDay === time.morningSeconds) {
                 // Find the nearest boat
                 const nearestBoat = db.findNearestEntityOfType(entity.position, 'boat');
                 if (nearestBoat) {
@@ -59,7 +50,7 @@ export function peopleSystem(state) {
                 } else {
                     console.error("No boat found for person");
                 }
-            } else if (state.tick === state.eveningTick) {
+            } else if (time.secondOfDay === time.eveningSeconds) {
                 // Find the nearest building
                 const nearestBuilding = db.findNearestEntityOfType(entity.position, 'building');
                 if (nearestBuilding) {

@@ -10,8 +10,8 @@ function start3js() {
 	document.body.appendChild(renderer.domElement);
 
 	// camera
-	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-	camera.position.set(100, 100, 100)
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+	camera.position.set(0,config.height,config.height)
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 
 	// controls
@@ -69,12 +69,18 @@ export function updateEntities() {
 
 			switch (entity.volume.geometry) {
 
+				case 'pointLight':
+					entity.node = new THREE.PointLight(entity.volume.color, entity.volume.intensity, entity.volume.distance, entity.volume.decay)
+					entity.node.add( new THREE.Mesh(new THREE.SphereGeometry(10, 32, 32), material ) )
+					break
 				case 'ambientLight':
-					 entity.node = new THREE.AmbientLight(entity.volume.color, entity.volume.intensity)
-					 break
+					entity.node = new THREE.AmbientLight(entity.volume.color, entity.volume.intensity)
+					entity.node.add( new THREE.Mesh(new THREE.SphereGeometry(10, 32, 32), material ) )
+					break
 				case 'directionalLight':
-					 entity.node = new THREE.DirectionalLight(entity.volume.color, entity.volume.intensity)
-					 break
+					entity.node = new THREE.DirectionalLight(entity.volume.color, entity.volume.intensity)
+					entity.node.add( new THREE.Mesh(new THREE.CylinderGeometry(0.5, 10, 10, 8), material ) )
+					break
 				case 'box':
 					geometry = new THREE.BoxGeometry(...entity.volume.props);
 					entity.node = new THREE.Mesh(geometry, material);
@@ -119,15 +125,17 @@ export function updateEntities() {
 					delete entity.volume
 					return;
 			}
-
-			if(entity.node) {
-				if(entity.position) {
-					entity.node.position.set(entity.position.x, entity.position.y, entity.position.z);
-				}
-				scene.add(entity.node);
-				console.log("added",entity)
+			if(entity.node && entity.position) {
+				entity.node.position.x = entity.position.x
+				entity.node.position.y = entity.position.y
+				entity.node.position.z = entity.position.z
 			}
-
+			if(entity.node && entity.rotation) {
+				entity.node.rotation.x = entity.rotation.x
+				entity.node.rotation.y = entity.rotation.y
+				entity.node.rotation.z = entity.rotation.z
+			}
+			scene.add(entity.node)
 		}
 
 		// Interpolate X, Y, and Z positions
@@ -137,6 +145,12 @@ export function updateEntities() {
 			entity.node.position.z += (entity.position.z - entity.node.position.z) * interpolationRate;
 		}
 
+		if (false && entity.node && entity.rotation) {
+			entity.node.rotation.x += (entity.rotation.x - entity.node.rotation.x) * interpolationRate;
+			entity.node.rotation.y += (entity.rotation.y - entity.node.rotation.y) * interpolationRate;
+			entity.node.rotation.z += (entity.rotation.z - entity.node.rotation.z) * interpolationRate;
+			console.log(entity.node.rotation)
+		}
 
 	});
 }

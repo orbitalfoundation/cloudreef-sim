@@ -3,5 +3,6 @@ const config = globalThis.config = {
     height: 512,
     waterLevel: 10,
     terrain: 'terrain',
+    delay: 10,
 }
 

@@ -24,7 +24,7 @@ const scenario_files = [
 
 	'./ux/hud.js',
 
-//    './reflect.js',
+    './ux/reflect.js',
 //    './analytics.js',
 //   './analytics-view.js',
 

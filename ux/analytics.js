@@ -30,7 +30,24 @@ function getAnalytics() {
 }
 
 // Set up interval to update entity totals every second
-setInterval(updateEntityTotals, 1000);
+//setInterval(updateEntityTotals, 1000);
 
 // Export the getAnalytics function
 export { getAnalytics };
+
+
+/*
+
+
+import { getAnalytics } from './analytics.js';
+
+    // Log analytics every hour
+    if (state.secondOfDay % 3600 < state.secondsStepRate) {
+        const analytics = getAnalytics();
+        console.log('Analytics - Entity Totals Over Time:', analytics);
+    }
+}
+
+
+
+*/

@@ -30,10 +30,10 @@ export function updateHUD() {
     const currentSecond = secondOfDay % 60;
 
     hudElement.innerHTML = `
-        <div>Year: ${years + 1}</div>
-        <div>Day: ${currentDay}/${daysPerYear}</div>
+        <div>Year: ${time.years}</div>
+        <div> Day: ${time.dayOfYear}</div>
         <div>Time: ${hourOfDay.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}:${currentSecond.toString().padStart(2, '0')}</div>
-        <div>Total Seconds: ${seconds}</div>
+        <div>Total Seconds: ${time.seconds}</div>
     `;
 }
 

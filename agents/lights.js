@@ -1,55 +1,75 @@
 
+const config = globalThis.config
+const width = config.width
+const height = config.height
+
 export const directionalLight = {
 	uuid: '/light/directional',
 	type: 'directionalLight',
-	position: { x: 1, y: 1, z: 1 },
+	position: { x: width/2 , y: 100, z: height/2 },
+	rotation: { x: 0, y: 0, z: 0 },
 	volume: {
 		geometry: 'directionalLight',
-		lightType: 'directional',
 		color: 0xffffff,
-		intensity: 1,
+		intensity: 0.5,
+        material: {
+            color: 0xffff00,
+            opacity: 0.5,
+            transparent: true,
+            side: THREE.DoubleSide
+        }
 	}
 };
 
 export const ambientLight = {
 	uuid: '/light/ambient',
 	type: 'ambientLight',
-	position: { x: 1, y: 1, z: 1 },
+	position: { x: width/2, y: 0, z: height/2 },
 	volume: {
 		geometry: 'ambientLight',
-		lightType: 'ambient',
-		color: 0x404040,
-		intensity: 1,
-		position: { x: 0, y: 0, z: 0 }
+		color: 0xffffff,
+		intensity: 0.5,
+        material: {
+            color: 0xffff00,
+            opacity: 0.5,
+            transparent: true,
+            side: THREE.DoubleSide
+        }
 	}
 };
 
 export const sunLight = {
 	uuid: '/light/sun',
 	type: 'pointLight',
-	position: { x: 100, y: 100, z: 0 },
+	position: { x: 0, y: 0, z: 0 },
 	volume: {
 		geometry: 'pointLight',
-		lightType: 'point',
 		color: 0xffffff,
-		intensity: 1,
-		distance: 500,
-		decay: 2
+		intensity: 0.1,
+		distance: 512,
+		decay: 2,
+        material: {
+            color: 0xffff00,
+            opacity: 0.5,
+            transparent: true,
+            side: THREE.DoubleSide
+        }
 	}
 };
 
+const time = globalThis.time
+
 export function sunSystem() {
-	const sunEntity = globalThis.db.getEntity('/light/sun');
-	if (!sunEntity) return;
 
-	const time = globalThis.time;
-	const radius = 200;
-	const speed = 0.001;
-	const angle = time.seconds * speed;
+	const entity = globalThis.db.getEntity('/light/sun')
+	if (!entity) return
 
-	sunEntity.position.x = Math.cos(angle) * radius;
-	sunEntity.position.z = Math.sin(angle) * radius;
-	sunEntity.position.y = Math.abs(Math.sin(angle)) * radius + 50;
+	const radius = config.width
+	const angle = time.secondOfDay / time.secondsPerDay * Math.PI
 
-	globalThis.db.addEntity(sunEntity);
+	entity.position.x = Math.cos(angle) * radius + radius / 2
+	entity.position.y = Math.sin(angle) * radius - radius / 2
+	entity.position.z = radius / 2
+
 }
+
