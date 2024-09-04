@@ -31,10 +31,7 @@ const scenario_files = [
 ];
 
 import { systems_load, systems_run } from './core/systems.js'
-import { sunSystem } from './agents/lights.js'
 
 systems_load(scenario_files)
-
-globalThis.systems.push(sunSystem);
 
 systems_run()
