@@ -19,8 +19,6 @@ function createHUD() {
     return hudElement;
 }
 
-const hudElement = createHUD();
-
 function createButton(text, onClick) {
     const button = document.createElement('button');
     button.textContent = text;
@@ -31,14 +29,29 @@ function createButton(text, onClick) {
     return button;
 }
 
+const hudElement = createHUD();
+const yearElement = document.createElement('div');
+const dayElement = document.createElement('div');
+const timeElement = document.createElement('div');
+const totalSecondsElement = document.createElement('div');
+const stepRateElement = document.createElement('div');
+
+hudElement.appendChild(yearElement);
+hudElement.appendChild(dayElement);
+hudElement.appendChild(timeElement);
+hudElement.appendChild(totalSecondsElement);
+hudElement.appendChild(stepRateElement);
+
 const buttonContainer = document.createElement('div');
 buttonContainer.style.marginTop = '10px';
 
 const increaseButton = createButton('Speed Up', () => {
+    console.log('faster');
     globalThis.time.secondsStepRate = Math.min(3600, globalThis.time.secondsStepRate + 100);
 });
 
 const decreaseButton = createButton('Slow Down', () => {
+    console.log('slower');
     globalThis.time.secondsStepRate = Math.max(100, globalThis.time.secondsStepRate - 100);
 });
 
@@ -47,26 +60,21 @@ buttonContainer.appendChild(decreaseButton);
 hudElement.appendChild(buttonContainer);
 
 function observer(blob) {
-    if(!blob.tick) return
-    const time = blob.time
+    if (!blob.tick) return;
+    const time = blob.time;
 
-    const { years, dayOfYear, hourOfDay, secondOfDay, daysPerYear, seconds } = time;
-    const currentDay = dayOfYear + 1;
+    const { years, dayOfYear, hourOfDay, secondOfDay } = time;
     const currentMinute = Math.floor((secondOfDay % 3600) / 60);
     const currentSecond = secondOfDay % 60;
 
-    hudElement.innerHTML = `
-        <div>Year: ${time.years}</div>
-        <div>Day: ${time.dayOfYear}</div>
-        <div>Time: ${hourOfDay.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}:${currentSecond.toString().padStart(2, '0')}</div>
-        <div>Total Seconds: ${time.seconds}</div>
-        <div>Time Step Rate: ${time.secondsStepRate.toFixed(2)}</div>
-        <div>Step Rate: ${time.stepRate.toFixed(2)}</div>
-    `;
-    hudElement.appendChild(buttonContainer);
+    yearElement.textContent = `Year: ${years}`;
+    dayElement.textContent = `Day: ${dayOfYear}`;
+    timeElement.textContent = `Time: ${hourOfDay.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}:${currentSecond.toString().padStart(2, '0')}`;
+    totalSecondsElement.textContent = `Total Seconds: ${time.seconds}`;
+    stepRateElement.textContent = `Step Rate: ${time.secondsStepRate}`;
 }
 
 export const hud = {
-    uuid:'/ux/hud',
+    uuid: '/ux/hud',
     observer
-}
+};
