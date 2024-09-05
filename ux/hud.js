@@ -33,13 +33,11 @@ const hudElement = createHUD();
 const yearElement = document.createElement('div');
 const dayElement = document.createElement('div');
 const timeElement = document.createElement('div');
-const totalSecondsElement = document.createElement('div');
 const stepRateElement = document.createElement('div');
 
 hudElement.appendChild(yearElement);
 hudElement.appendChild(dayElement);
 hudElement.appendChild(timeElement);
-hudElement.appendChild(totalSecondsElement);
 hudElement.appendChild(stepRateElement);
 
 const buttonContainer = document.createElement('div');
@@ -70,7 +68,6 @@ function observer(blob) {
     yearElement.textContent = `Year: ${years}`;
     dayElement.textContent = `Day: ${dayOfYear}`;
     timeElement.textContent = `Time: ${hourOfDay.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}:${currentSecond.toString().padStart(2, '0')}`;
-    totalSecondsElement.textContent = `Total Seconds: ${time.seconds}`;
     stepRateElement.textContent = `Step Rate: ${time.secondsStepRate}`;
 }
 
