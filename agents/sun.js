@@ -38,6 +38,24 @@ export const ambientLight = {
 	}
 };
 
+const time = globalThis.time
+
+function observer(blob) {
+
+	if(!blob.tick) return
+
+	const entity = globalThis.db.getEntity('/light/sun')
+	if (!entity) return
+
+	const radius = config.width
+	const angle = time.secondOfDay / time.secondsPerDay * Math.PI
+
+	entity.position.x = Math.cos(angle) * radius + radius / 2
+	entity.position.y = Math.sin(angle) * radius - radius / 2
+	entity.position.z = radius / 2
+
+}
+
 export const sunLight = {
 	uuid: '/light/sun',
 	type: 'pointLight',
@@ -54,22 +72,7 @@ export const sunLight = {
             transparent: true,
             side: THREE.DoubleSide
         }
-	}
+	},
+	observer
 };
-
-const time = globalThis.time
-
-export function sunSystem() {
-
-	const entity = globalThis.db.getEntity('/light/sun')
-	if (!entity) return
-
-	const radius = config.width
-	const angle = time.secondOfDay / time.secondsPerDay * Math.PI
-
-	entity.position.x = Math.cos(angle) * radius + radius / 2
-	entity.position.y = Math.sin(angle) * radius - radius / 2
-	entity.position.z = radius / 2
-
-}
 

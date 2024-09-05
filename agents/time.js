@@ -25,7 +25,10 @@ const time = globalThis.time = {
 }
 
 
-function updateTime() {
+function observer(blob) {
+    if(!blob.tick) return
+
+    blob.time = time
 
     time.seconds += time.secondsStepRate
     time.hours = Math.floor(time.seconds / time.secondsPerHour )
@@ -37,3 +40,7 @@ function updateTime() {
     time.dayOfYear = time.days % time.daysPerYear
 }
 
+export const time_support = {
+    uuid:'/core/time',
+    observer
+}

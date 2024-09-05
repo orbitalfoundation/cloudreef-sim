@@ -6,8 +6,8 @@
 const scenario_files = [
 
 	'./config.js',
+	'./agents/time.js',
 
-	'./core/time.js',
 	'./core/layers.js',
 	'./core/db.js',
 	'./core/volume.js',
@@ -18,9 +18,11 @@ const scenario_files = [
 	'./agents/emitter.js',
 	'./agents/trees.js',
 	'./agents/buildings.js',
+
+	'./agents/sun.js',
+
 	'./agents/people.js',
 	'./agents/boats.js',
-	'./agents/lights.js',
 	'./agents/fish.js',
 
 	'./ux/hud.js',

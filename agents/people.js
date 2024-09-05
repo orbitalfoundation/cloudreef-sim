@@ -8,6 +8,8 @@ function observer(blob) {
 
     if(!blob.tick) return
 
+return
+
     Object.values(db.entities).forEach(entity => {
         if (!entity.people) return
 

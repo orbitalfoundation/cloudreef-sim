@@ -1,1 +1,0 @@
-// solar radiation schedule
