@@ -107,3 +107,19 @@ class DB {
 
 globalThis.db = new DB(globalThis.layers,globalThis.config);
 
+export const db_observer = {
+    uuid: '/core/db',
+    observer: (blob) => {
+        if(blob.tick) return
+        if(!blob.uuid) {
+            console.log("db blob no id",blob)
+            return
+        }
+        db.addEntity(blob)
+    }
+}
+
+
+
+
+

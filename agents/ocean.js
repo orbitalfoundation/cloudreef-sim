@@ -5,7 +5,7 @@ const height = globalThis.config.height;
 
 export const oceanEntity = {
     uuid: '/ocean',
-    type: 'ocean',
+    ocean: true,
     position: { x: 0, y: config.waterLevel, z: 0 },
     volume: {
         geometry: 'plane',

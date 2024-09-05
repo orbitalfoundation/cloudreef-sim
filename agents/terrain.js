@@ -1,4 +1,4 @@
-import { PerlinNoise } from '../core/perlin.js';
+import { PerlinNoise } from '../libs/perlin.js';
 
 const db = globalThis.db;
 const layers = globalThis.layers;
@@ -36,7 +36,7 @@ function generateIslandElevationWithPerlin(seed = 42) {
 function createTerrainEntity() {
     const terrainEntity = {
         uuid: '/terrain',
-        type: 'terrain',
+        terrain: true,
         position: { x: 0, y: 0, z: 0 },
         volume: {
             geometry: 'terrain',

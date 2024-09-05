@@ -25,7 +25,7 @@ const time = globalThis.time = {
 }
 
 
-export function updateTime() {
+function updateTime() {
 
     time.seconds += time.secondsStepRate
     time.hours = Math.floor(time.seconds / time.secondsPerHour )

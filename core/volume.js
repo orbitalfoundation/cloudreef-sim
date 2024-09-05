@@ -1,5 +1,6 @@
 
 const config = globalThis.config
+const db = globalThis.db
 
 function start3js() {
 
@@ -42,17 +43,20 @@ function start3js() {
 
 start3js()
 
-export function updateEntities() {
+function observer(blob) {
+
+	if(!blob.tick) return
+
 	const interpolationRate = 0.1
-	const db = globalThis.db
+
 	Object.values(db.entities).forEach(entity => {
 
 		// obliterate
 		if(entity.obliterate) {
 			if(entity.node) {
 				scene.remove(entity.node)
+				entity.node = null
 			}
-			entity.node = null
 			return
 		}
 
@@ -155,7 +159,10 @@ export function updateEntities() {
 	});
 }
 
-
+export const volume = {
+	uuid: '/core/volume',
+	observer : observer
+}
 
 
 

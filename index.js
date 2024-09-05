@@ -10,16 +10,17 @@ const scenario_files = [
 	'./core/time.js',
 	'./core/layers.js',
 	'./core/db.js',
-	'./core/vis.js',
+	'./core/volume.js',
 
 	'./agents/terrain.js',
 	'./agents/ocean.js',
+
+	'./agents/emitter.js',
 	'./agents/trees.js',
 	'./agents/buildings.js',
 	'./agents/people.js',
 	'./agents/boats.js',
 	'./agents/lights.js',
-	'./agents/emitter.js',
 	'./agents/fish.js',
 
 	'./ux/hud.js',
@@ -28,10 +29,8 @@ const scenario_files = [
 //    './analytics.js',
 //   './analytics-view.js',
 
-];
+]
 
-import { systems_load, systems_run } from './core/systems.js'
-
-systems_load(scenario_files)
-
-systems_run()
+import { sys } from './core/sys.js'
+sys.load(scenario_files)
+sys.run()

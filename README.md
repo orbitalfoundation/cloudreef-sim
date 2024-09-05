@@ -10,21 +10,37 @@ This model is of an island fishing village with people, boats, fish. It is fairl
 
 	~ sealevel could ideally be at zero - it just would be cleaner if that was the case - however right now the terrain is arranged so that it starts at 0 and extends upwards - so a bit of tidying up is needed
 
-	- ecs improvements
-		- don't have entity types just components
+	- globals -> get rid of them
+		- config
+		- db
+		- layers
+		- time
+
+	- fidde with water level; set it to 0
+
+	- vis/volume
+		- vis material indicate flavor such as phong
 		- move position to be inside volume
 		- allow lights to have richer geometry
 		- do not use props from making geometries
-		- material indicate flavor such as phong
 
 	- view
 		- first person
 		- adjust scales of entities to be human scale
+
+	- misc
 		- improve analytics
 		- auto comment
 		- auto docs
 		- regression tests unit tests
 		- move to typescript with rollup or esbuild
+
+	- db
+		- layers is separate from db
+		- spatial indexing
+		- query offset, limit
+		- closures/cursors rather than returning lists
+		- finish up obliterate
 
 ## revise play
 
