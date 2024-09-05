@@ -1,6 +1,5 @@
 
 const config = globalThis.config;
-const time = globalThis.time;
 
 function findRandomWaterLocation(currentPosition) {
 	const maxDistance = 20;
@@ -22,6 +21,7 @@ function findRandomWaterLocation(currentPosition) {
 export function observer(blob) {
 
     if(!blob.tick) return
+    const time = blob.time
 
 	Object.values(db.entities).forEach(entity => {
 		if (!entity.boat) return
@@ -53,7 +53,7 @@ export const boats = {
 			boat: true,
 			volume: { 
 				geometry: 'box', 
-				props: [3, 5, 3], 
+				whd: [3, 5, 3], 
 				material: { color: 'blue' } 
 			},
 		}

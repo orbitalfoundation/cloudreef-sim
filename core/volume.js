@@ -66,7 +66,16 @@ function observer(blob) {
 			let geometry, material;
 
 			if(entity.volume.material) {
-				material = new THREE.MeshPhongMaterial(entity.volume.material);
+				switch(entity.volume.material.kind) {
+					case 'basic':
+						const props = { ... entity.volume.material }
+						delete props.kind
+						material = new THREE.MeshBasicMaterial(props)
+						break
+					default:
+						material = new THREE.MeshPhongMaterial(entity.volume.material)
+						break
+				}
 			} else {
 				material = new THREE.MeshPhongMaterial({ color: 0xcccccc });
 			}
@@ -86,11 +95,11 @@ function observer(blob) {
 					entity.node.add( new THREE.Mesh(new THREE.CylinderGeometry(0.5, 10, 10, 8), material ) )
 					break
 				case 'box':
-					geometry = new THREE.BoxGeometry(...entity.volume.props);
+					geometry = new THREE.BoxGeometry(1,1,1);
 					entity.node = new THREE.Mesh(geometry, material);
 					break;
 				case 'sphere':
-					geometry = new THREE.SphereGeometry(entity.volume.props[0], 32, 32);
+					geometry = new THREE.SphereGeometry(1, 32, 32);
 					entity.node = new THREE.Mesh(geometry, material);
 					break;
 				case 'cylinder':
@@ -98,15 +107,14 @@ function observer(blob) {
 					entity.node = new THREE.Mesh(geometry, material);
 					break;
 				case 'plane':
-					// @note planes must cover the number space of the extent of the playing area - so are not centered
 					geometry = new THREE.PlaneGeometry(...entity.volume.props);
 					entity.node = new THREE.Mesh(geometry, material);
+					// adjust plane to represent the extent rather than using default centering, also rotate them flat
 					entity.node.rotation.set(Math.PI/2,0,0)
 					entity.position.x += entity.volume.props[0] / 2 
 					entity.position.z += entity.volume.props[1] / 2 
 					break;
 				case 'terrain':
-					// @note planes must cover the number space of the extent of the playing area - so are not centered
 					geometry = new THREE.PlaneGeometry(...entity.volume.props);
 					{
 						const layer = layers.get('terrain')
@@ -117,6 +125,7 @@ function observer(blob) {
 						geometry.computeVertexNormals();
 						geometry.attributes.position.needsUpdate = true;
 					}
+					// adjust plane to represent the extent rather than using default centering, also rotate them flat
 					entity.node = new THREE.Group()
 					const child = new THREE.Mesh(geometry, material) 
 					child.rotation.set(-Math.PI/2,0,0)
@@ -128,6 +137,11 @@ function observer(blob) {
 					console.warn(`Unsupported geometry type: ${entity.volume.geometry}`);
 					delete entity.volume
 					return;
+			}
+			if(entity.node && entity.volume.whd) {
+				entity.node.scale.x = entity.volume.whd[0]
+				entity.node.scale.y = entity.volume.whd[1]
+				entity.node.scale.z = entity.volume.whd[2]
 			}
 			if(entity.node && entity.position) {
 				entity.node.position.x = entity.position.x

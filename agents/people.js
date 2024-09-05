@@ -1,14 +1,12 @@
 
 const db = globalThis.db;
 const config = globalThis.config;
-const time = globalThis.time;
 const peopleElevation = 2.5;
 
 function observer(blob) {
 
     if(!blob.tick) return
-
-return
+    const time = blob.time
 
     Object.values(db.entities).forEach(entity => {
         if (!entity.people) return
@@ -26,7 +24,7 @@ return
 
         if (time.secondOfDay === time.morningSeconds) {
             // Find the nearest boat
-            const nearestBoat = db.findNearestEntityOfType(entity.position, 'boat');
+            const nearestBoat = db.findNearestEntityWithComponent(entity.position, 'boat');
             if (nearestBoat) {
                 entity.position = { 
                     x: nearestBoat.position.x, 
@@ -38,7 +36,7 @@ return
             }
         } else if (time.secondOfDay === time.eveningSeconds) {
             // Find the nearest building
-            const nearestBuilding = db.findNearestEntityOfType(entity.position, 'building');
+            const nearestBuilding = db.findNearestEntityWithComponent(entity.position, 'building');
             if (nearestBuilding) {
                 entity.position = { 
                     x: nearestBuilding.position.x, 
@@ -57,12 +55,12 @@ export const people = {
     emitter: {
         minElevation: config.waterLevel,
         maxElevation: Infinity,
-        quantity: 10, // Total number of people to generate
+        quantity: 10,
         spawn: {
             people: true,
             volume: { 
                 geometry: 'sphere', 
-                props: [1], 
+                whd: [3,3,3],
                 material: { color: 'gold' } 
             },
         }

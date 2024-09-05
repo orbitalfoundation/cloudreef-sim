@@ -3,7 +3,7 @@
 /// @summary hard-coded list of entities and systems to load
 ///
 
-const scenario_files = [
+const load = [
 
 	'./config.js',
 	'./agents/time.js',
@@ -34,5 +34,5 @@ const scenario_files = [
 ]
 
 import { sys } from './core/sys.js'
-sys.load(scenario_files)
+sys.resolve({load})
 sys.run()

@@ -1,72 +1,15 @@
 # Overview
 
-A reef simulation - exercising aider/cursor and claude sonnet for big block code completion of a simulation model from scratch.
+A coastal reef ecology simulation - exercising aider/cursor and claude sonnet to write a simulation model from scratch.
 
-This model is of an island fishing village with people, boats, fish. It is fairly simple. Uses 3js for visualization.
+This model includes an island fishing village with people, boats, fish and coral. Uses 3js for visualization.
 
 ![reef](assets/screenshot.png?raw=true "reef")
 
-## bugs
+## Design
 
-	~ sealevel could ideally be at zero - it just would be cleaner if that was the case - however right now the terrain is arranged so that it starts at 0 and extends upwards - so a bit of tidying up is needed
+The simulation is implemented in nodejs and leverages the browser for rendering. There's some emphasis on a data driven messaging pattern, there's less emphasis on performance at this stage.
 
-	- globals -> get rid of them
-		- config
-		- db
-		- layers
-		- time
+Agents are defined as ordinary json using an ECS like pattern. An entity is decorated with components that describe state such as rendering style, or if the agent is a person or a boat. Some of the agents include people, boats, fish, trees, buildings. There is an 'emitter' agent that can spawn other agents. There is also an agent that represents time, and there is an agent for solar radiation and day/night cycles.
 
-	- fidde with water level; set it to 0
-
-	- vis/volume
-		- vis material indicate flavor such as phong
-		- move position to be inside volume
-		- allow lights to have richer geometry
-		- do not use props from making geometries
-
-	- view
-		- first person
-		- adjust scales of entities to be human scale
-
-	- misc
-		- improve analytics
-		- auto comment
-		- auto docs
-		- regression tests unit tests
-		- move to typescript with rollup or esbuild
-
-	- db
-		- layers is separate from db
-		- spatial indexing
-		- query offset, limit
-		- closures/cursors rather than returning lists
-		- finish up obliterate
-
-## revise play
-
-	- people
-		- right now persons and other entities don't have a correct memoization of their starting position; this could use improvement
-		- people have a lifespan
-		- people have energy budget
-		- people harvest fish for energy
-		- people die
-		- people give birth
-		- people have childhoods
-		- people harvest trees to build boats
-		- people harvest trees to build shelter
-		- people have some kind of affinity to a home and or work
-
-	- boats
-		- people should move with boats
-		- harvest actual fish
-
-	- fish
-		- flock
-		- have a plankton layer or bloom layer
-		- change elevation
-		- die / reproduce
-
-	- corals
-		- grow
-		-
-
+There is a systems wide message bus (see the sys module) and agent 'manifests' in javascript are inhaled into sys and every export from a manifest is passed as a message to all observers registered with sys. New observers can also be registered. Some important observers are registered early such as in-memory database (db) a renderer (volume).

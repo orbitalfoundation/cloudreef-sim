@@ -80,17 +80,17 @@ class DB {
         return this.getPositionsWithinElevationRange(threshold, Infinity);
     }
 
-    /// @summary Get entities by type
-    getEntitiesByType(type) {
-        return Object.values(this.entities).filter(entity => entity.type === type);
+    /// @summary Get entities with component
+    getEntitiesWithComponent(name) {
+        return Object.values(this.entities).filter(entity => entity[name] ? true : false );
     }
 
-    /// @summary Find the nearest entity of a specific type to a given position
-    findNearestEntityOfType(position, type) {
+    /// @summary Find the nearest entity with a given component to a given position
+    findNearestEntityWithComponent(position, name) {
         let nearestEntity = null;
         let minDistance = Infinity;
 
-        this.getEntitiesByType(type).forEach(entity => {
+        this.getEntitiesWithComponent(name).forEach(entity => {
             const distance = Math.sqrt(
                 Math.pow(position.x - entity.position.x, 2) +
                 Math.pow(position.z - entity.position.z, 2)

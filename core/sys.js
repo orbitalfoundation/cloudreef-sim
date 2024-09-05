@@ -1,21 +1,5 @@
 
 ///
-/// @summary load manifests - pipes exports to sys.resolve() as messages
-///
-
-async function load(files) {
-	for (const file of files) {
-		const module = await import("../"+file);
-		for (const [key, blob] of Object.entries(module)) {
-			if (typeof blob !== 'object') continue
-			if(blob.observer) this.observers.push(blob.observer) // @todo for now stuff them here - later have an observers observer
-			blob._metadata = { file, key }
-			await this.resolve(blob)
-		}
-	}
-}
-
-///
 /// @summary pass a message to all observers - synchronous for the collection of observers using await on each observer
 ///
 
@@ -29,7 +13,7 @@ async function resolve(blob) {
 }
 
 ///
-/// @summary visit all observers every tick
+/// @summary pass a tick message to sys resolve at a high frequency suitable for real time human interaction
 ///
 
 function run() {
@@ -41,11 +25,29 @@ function run() {
 }
 
 ///
+/// @summary load observer - loads whatever is specified by passing exports into sys.resolve() as message traffic
+///
+
+async function load(blob) {
+	if(!blob.load) return
+	const sys = blob._sys
+	for (const file of blob.load) {
+		const module = await import("../"+file);
+		for (const [key, blob] of Object.entries(module)) {
+			if (typeof blob !== 'object') continue
+			if(blob.observer) sys.observers.push(blob.observer) // @todo for now stuff them here - later have an observers observer
+			blob._metadata = { file, key }
+			await sys.resolve(blob)
+		}
+	}
+}
+
+///
 /// @summmary public interface for sys - sys provides a messaging backbone to connect together other agents 
 ///
 
 export const sys = {
-	observers: [],
+	observers: [ load ],
 	load : load,
 	resolve: resolve,
 	run : run

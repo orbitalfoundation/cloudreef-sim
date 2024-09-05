@@ -13,7 +13,7 @@ const time = globalThis.time = {
     monthOfYear: 0,
     dayOfYear: 0,
 
-    secondsStepRate: 3600,
+    secondsStepRate: 100,
     secondsPerHour: 3600,
     secondsPerDay: 86400,
     secondsPerYear: 86400 * 12,
@@ -28,6 +28,7 @@ const time = globalThis.time = {
 function observer(blob) {
     if(!blob.tick) return
 
+    // stuff time right into the blob and it will be passed to subsequent listeners
     blob.time = time
 
     time.seconds += time.secondsStepRate
