@@ -61,6 +61,7 @@ function observer(blob) {
         <div>Time: ${hourOfDay.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}:${currentSecond.toString().padStart(2, '0')}</div>
         <div>Total Seconds: ${time.seconds}</div>
         <div>Time Step Rate: ${time.secondsStepRate.toFixed(2)}</div>
+        <div>Step Rate: ${time.stepRate.toFixed(2)}</div>
     `;
     hudElement.appendChild(buttonContainer);
 }
