@@ -3,6 +3,8 @@ export function observer(blob) {
 
     if(!blob.tick) return
 
+    // @todo use blob.time to schedule these
+
     const maxHeadingChange = Math.PI / 4; // Maximum change in heading per update (radians)
     const speed = 0.5; // Speed of the fish
     const width = globalThis.config.width;
@@ -67,8 +69,7 @@ export const fish = {
             fish: true,
             volume: { 
                 geometry: 'sphere',
-                props: [1],
-                material: { color: 0xff0000 }
+                material: { color: 0xC0C0C0 }  // Silver color
             },
         }
     },
