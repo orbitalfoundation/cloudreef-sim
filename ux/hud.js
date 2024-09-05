@@ -35,11 +35,11 @@ const buttonContainer = document.createElement('div');
 buttonContainer.style.marginTop = '10px';
 
 const increaseButton = createButton('Speed Up', () => {
-    globalThis.time.secondsStepRate *= 2;
+    globalThis.time.secondsStepRate = Math.min(3600, globalThis.time.secondsStepRate + 100);
 });
 
 const decreaseButton = createButton('Slow Down', () => {
-    globalThis.time.secondsStepRate /= 2;
+    globalThis.time.secondsStepRate = Math.max(100, globalThis.time.secondsStepRate - 100);
 });
 
 buttonContainer.appendChild(increaseButton);
