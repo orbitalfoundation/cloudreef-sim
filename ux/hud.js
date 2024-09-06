@@ -43,18 +43,42 @@ hudElement.appendChild(stepRateElement);
 const buttonContainer = document.createElement('div');
 buttonContainer.style.marginTop = '10px';
 
+let previousStepRate = globalThis.time.secondsStepRate;
+let isPaused = false;
+
 const increaseButton = createButton('Speed Up', () => {
     console.log('faster');
-    globalThis.time.secondsStepRate = Math.min(3600, globalThis.time.secondsStepRate + 100);
+    if (!isPaused) {
+        globalThis.time.secondsStepRate = Math.min(3600, globalThis.time.secondsStepRate + 100);
+        previousStepRate = globalThis.time.secondsStepRate;
+    }
 });
 
 const decreaseButton = createButton('Slow Down', () => {
     console.log('slower');
-    globalThis.time.secondsStepRate = Math.max(100, globalThis.time.secondsStepRate - 100);
+    if (!isPaused) {
+        globalThis.time.secondsStepRate = Math.max(100, globalThis.time.secondsStepRate - 100);
+        previousStepRate = globalThis.time.secondsStepRate;
+    }
+});
+
+const pauseButton = createButton('Pause', () => {
+    if (isPaused) {
+        console.log('resume');
+        globalThis.time.secondsStepRate = previousStepRate;
+        pauseButton.textContent = 'Pause';
+    } else {
+        console.log('pause');
+        previousStepRate = globalThis.time.secondsStepRate;
+        globalThis.time.secondsStepRate = 0;
+        pauseButton.textContent = 'Resume';
+    }
+    isPaused = !isPaused;
 });
 
 buttonContainer.appendChild(increaseButton);
 buttonContainer.appendChild(decreaseButton);
+buttonContainer.appendChild(pauseButton);
 hudElement.appendChild(buttonContainer);
 
 function observer(blob) {
