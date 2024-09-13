@@ -2,7 +2,7 @@
 export const trees = {
     uuid: `/agents/tree`,
     emitter: {
-        minElevation: 11,
+        minElevation: globalThis.config.waterLevel + 5,
         maxElevation: Infinity,
         quantity: 200,
         spawn: {

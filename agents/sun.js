@@ -1,79 +1,93 @@
 
 const config = globalThis.config
-const width = config.width
-const height = config.height
+const size = config.size
+const sundist = size + 20
+const moondist = size
+const slightlydifferentspeed = 1.1
 
-function observer(blob) {
-	if(!blob.tick) return
+function resolve(blob) {
+	if(!blob.time) return
 	const time = blob.time
+	const sys = blob._sys
+	const db = sys.db
 
-	const sunEntity = globalThis.db.getEntity('/light/sun')
-	const moonEntity = globalThis.db.getEntity('/light/moon')
-	if (!sunEntity || !sunEntity.node || !moonEntity || !moonEntity.node) return
+	db.query({uuid:'/light/sun'},(sunEntity)=>{
+		const node = sunEntity.volume.node // @todo hack - improve position setter
+		const radius = sundist
+		const sunAngle = time.seconds / time.secondsPerDay * Math.PI * 2 - Math.PI / 2
+		// @todo it breaks separation of concerns and is a hack to peek at node directly
+		node.position.x = sunEntity.position.x = Math.cos(sunAngle) * radius / 2 + radius / 2
+		node.position.y = sunEntity.position.y = Math.sin(sunAngle) * radius / 2
+		node.position.z = sunEntity.position.z = radius / 2
+	})
 
-	const radius = config.width
-	const sunAngle = time.secondOfDay / time.secondsPerDay * Math.PI * 2 - Math.PI / 2
-	const moonAngle = sunAngle + Math.PI // Moon is opposite to the sun
-
-	// Update sun position
-	sunEntity.node.position.x = sunEntity.position.x = Math.cos(sunAngle) * radius / 2 + radius / 2
-	sunEntity.node.position.y = sunEntity.position.y = Math.sin(sunAngle) * radius / 2
-	sunEntity.node.position.z = sunEntity.position.z = radius / 2
-
-	// Update moon position
-	moonEntity.node.position.x = moonEntity.position.x = Math.cos(moonAngle) * radius / 2 + radius / 2
-	moonEntity.node.position.y = moonEntity.position.y = Math.sin(moonAngle) * radius / 2
-	moonEntity.node.position.z = moonEntity.position.z = radius / 2
-
-	// Adjust light intensities based on time of day
-	const dayProgress = (sunAngle + Math.PI / 2) / (Math.PI * 2)
-	sunEntity.volume.intensity = Math.sin(dayProgress * Math.PI)
-	moonEntity.volume.intensity = Math.sin((dayProgress + 0.5) * Math.PI) * 0.3 // Moon is dimmer
+	db.query({uuid:'/light/moon'},(moonEntity)=>{
+		const node = moonEntity.volume.node
+		const radius = moondist
+		const sunAngle = time.seconds / time.secondsPerDay * Math.PI * 2 - Math.PI / 2
+		const moonAngle = sunAngle * slightlydifferentspeed + Math.PI/8 
+		node.position.x = moonEntity.position.x = Math.cos(moonAngle) * radius / 2 + radius / 2
+		node.position.y = moonEntity.position.y = Math.sin(moonAngle) * radius / 2
+		node.position.z = moonEntity.position.z = radius / 2
+		node.rotation.y = node.y = moonAngle
+	})
 }
 
 export const sunLight = {
 	uuid: '/light/sun',
 	position: { x: 0, y: 0, z: 0 },
 	volume: {
-		geometry: 'pointLight',
+		geometry: 'directionalLight',
 		color: 0xffffff,
 		intensity: 1,
-		distance: 512,
-		decay: 2,
+		distance: sundist,
+		decay: 1,
 		material: {
 			kind: 'basic',
-			color: 0xffff00,
+			color: 0xffffcc,
 		}
 	},
-	observer
+	resolve
 }
+
+var textureURL = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/17271/lroc_color_poles_1k.jpg"; 
+var displacementURL = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/17271/ldem_3_8bit.jpg"; 
+var worldURL = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/17271/hipp8_s.jpg"
+var textureLoader = new THREE.TextureLoader();
+var texture = textureLoader.load( textureURL );
+var displacementMap = textureLoader.load( displacementURL );
+var worldTexture = textureLoader.load( worldURL );
 
 export const moonLight = {
 	uuid: '/light/moon',
 	position: { x: 0, y: 0, z: 0 },
 	volume: {
 		geometry: 'pointLight',
-		color: 0xaaaaff, // Slightly blue tint for moonlight
+		color: 0xaaaaff,
 		intensity: 0.3,
-		distance: 512,
+		distance: 600,
 		decay: 2,
 		material: {
-			kind: 'basic',
-			color: 0xaaaaff,
+			color: 0xffffff ,
+			map: texture ,
+			displacementMap: displacementMap,
+			displacementScale: 0.06,
+			bumpMap: displacementMap,
+			bumpScale: 0.04,
 		}
 	},
-	observer
 }
 
-const directionalLight = {
-	uuid: '/light/directional',
-	position: { x: width/2 , y: 100, z: height/2 },
+const pointLight = {
+	uuid: '/light/point',
+	position: { x: size/2 , y: 100, z: size/2 },
 	rotation: { x: 0, y: 0, z: 0 },
 	volume: {
-		geometry: 'directionalLight',
+		geometry: 'pointLight',
 		color: 0xffffff,
 		intensity: 0.5,
 		material: {
+			kind: 'basic',
 			color: 0xffff00,
 			opacity: 0.5,
 			transparent: true,
@@ -84,12 +98,13 @@ const directionalLight = {
 
 export const ambientLight = {
 	uuid: '/light/ambient',
-	position: { x: width/2, y: 0, z: height/2 },
+	position: { x: size/2, y: 0, z: size/2 },
 	volume: {
 		geometry: 'ambientLight',
 		color: 0xffffff,
-		intensity: 0.2, // Reduced intensity to account for moon light
+		intensity: 0.4,
 		material: {
+			kind: 'basic',
 			color: 0xffff00,
 			opacity: 0.5,
 			transparent: true,

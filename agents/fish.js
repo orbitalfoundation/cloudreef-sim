@@ -1,78 +1,77 @@
 
-export function observer(blob) {
+const waterLevel = globalThis.config.waterLevel
+const size = globalThis.config.size
 
-    if(!blob.tick) return
+const maxHeadingChange = Math.PI / 4; // Maximum change in heading per update (radians)
+const speed = 0.5; // Speed of the fish
 
-    // @todo use blob.time to schedule these
+function resolve(blob) {
 
-    const maxHeadingChange = Math.PI / 4; // Maximum change in heading per update (radians)
-    const speed = 0.5; // Speed of the fish
-    const width = globalThis.config.width;
-    const height = globalThis.config.height;
-    const terrain = globalThis.layers.get('terrain');
-    const waterLevel = globalThis.config.waterLevel;
+	if(!blob.time) return
 
-    Object.values(db.entities).forEach(entity => {
-        if (!entity.fish) return
+	const sys = blob._sys
+	const volume = sys.volume
 
-        // Initialize heading if it doesn't exist
-        if (!entity.heading) {
-            entity.heading = Math.random() * 2 * Math.PI; // Random initial heading
-        }
+	const terrain = volume.terrain() // @todo hack
 
-        // Randomly adjust heading
-        if (Math.random() < 0.1) { // 10% chance to change heading each tick
-            entity.heading += (Math.random() - 0.5) * maxHeadingChange;
-        }
+	const callback = (entity) => {
+ 
+		// Initialize heading if it doesn't exist
+		if (!entity.heading) {
+			entity.heading = Math.random() * 2 * Math.PI; // Random initial heading
+		}
 
-        let attempts = 0;
-        let validMove = false;
+		// Randomly adjust heading
+		if (Math.random() < 0.1) { // 10% chance to change heading each tick
+			entity.heading += (Math.random() - 0.5) * maxHeadingChange;
+		}
 
-        while (!validMove && attempts < 8) {
-            // Calculate the new position based on the heading
-            let newX = entity.position.x + Math.cos(entity.heading) * speed;
-            let newZ = entity.position.z + Math.sin(entity.heading) * speed;
+		let attempts = 0;
+		let validMove = false;
 
-            // Ensure newX and newZ stay within bounds
-            newX = Math.max(0, Math.min(newX, width - 1));
-            newZ = Math.max(0, Math.min(newZ, height - 1));
+		while (!validMove && attempts < 8) {
+			// Calculate the new position based on the heading
+			let newX = entity.position.x + Math.cos(entity.heading) * speed;
+			let newZ = entity.position.z + Math.sin(entity.heading) * speed;
 
-            const terrainHeight = terrain[Math.floor(newZ) * width + Math.floor(newX)];
+			// Ensure newX and newZ stay within bounds
+			newX = Math.max(0, Math.min(newX, size - 1));
+			newZ = Math.max(0, Math.min(newZ, size - 1));
 
-            // Check if the new position is valid (above terrain and below water level)
-            if (terrainHeight < waterLevel) {
-                const newY = Math.max(terrainHeight + 1, Math.min(entity.position.y, waterLevel - 1));
-                entity.position = { x: newX, y: newY, z: newZ };
-                validMove = true;
-            } else {
-                // If the move is invalid, change direction and try again
-                entity.heading = (entity.heading + Math.PI / 4) % (2 * Math.PI);
-                attempts++;
-            }
+			const terrainHeight = terrain[Math.floor(newZ) * size + Math.floor(newX)];
 
-        }
+			// Check if the new position is valid (above terrain and below water level)
+			if (terrainHeight < waterLevel) {
+				const newY = Math.max(terrainHeight + 1, Math.min(entity.position.y, waterLevel - 1));
+				entity.position = { x: newX, y: newY, z: newZ };
+				validMove = true;
+			} else {
+				// If the move is invalid, change direction and try again
+				entity.heading = (entity.heading + Math.PI / 4) % (2 * Math.PI);
+				attempts++;
+			}
 
-        // If no valid move found after 8 attempts, fish stays in place
-        if (!validMove) {
-            console.log("Fish couldn't find a valid move");
-        }
-    });
+		}
+	}
+
+	volume.query({filter:{fish:true},callback})
+
 }
 
 export const fish = {
-    uuid: `/agents/fish`,
-    emitter: {
-        minElevation: 1,
-        maxElevation: 9,
-        quantity: 500,
-        spawn: {
-            fish: true,
-            volume: { 
-                geometry: 'sphere',
-                material: { color: 0xC0C0C0 }  // Silver color
-            },
-        }
-    },
-    observer
+	uuid: `/agents/fish`,
+	resolve,
+	emitter: {
+		minElevation: 0,
+		maxElevation: globalThis.config.waterLevel - 1,
+		quantity: 500,
+		spawn: {
+			fish: true,
+			volume: { 
+				geometry: 'sphere',
+				material: { color: 0xC0C0C0 }  // Silver color
+			},
+		}
+	}
 }
 

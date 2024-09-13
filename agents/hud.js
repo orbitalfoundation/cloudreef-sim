@@ -43,11 +43,10 @@ hudElement.appendChild(stepRateElement);
 const buttonContainer = document.createElement('div');
 buttonContainer.style.marginTop = '10px';
 
-let previousStepRate = globalThis.time.secondsStepRate;
+let previousStepRate = 0;
 let isPaused = false;
 
 const increaseButton = createButton('Speed Up', () => {
-    console.log('faster');
     if (!isPaused) {
         globalThis.time.secondsStepRate = Math.min(3600, globalThis.time.secondsStepRate + 100);
         previousStepRate = globalThis.time.secondsStepRate;
@@ -55,7 +54,6 @@ const increaseButton = createButton('Speed Up', () => {
 });
 
 const decreaseButton = createButton('Slow Down', () => {
-    console.log('slower');
     if (!isPaused) {
         globalThis.time.secondsStepRate = Math.max(100, globalThis.time.secondsStepRate - 100);
         previousStepRate = globalThis.time.secondsStepRate;
@@ -64,11 +62,9 @@ const decreaseButton = createButton('Slow Down', () => {
 
 const pauseButton = createButton('Pause', () => {
     if (isPaused) {
-        console.log('resume');
         globalThis.time.secondsStepRate = previousStepRate;
         pauseButton.textContent = 'Pause';
     } else {
-        console.log('pause');
         previousStepRate = globalThis.time.secondsStepRate;
         globalThis.time.secondsStepRate = 0;
         pauseButton.textContent = 'Resume';
@@ -81,8 +77,8 @@ buttonContainer.appendChild(decreaseButton);
 buttonContainer.appendChild(pauseButton);
 hudElement.appendChild(buttonContainer);
 
-function observer(blob) {
-    if (!blob.tick) return;
+function resolve(blob) {
+    if (!blob.time) return;
     const time = blob.time;
 
     const { years, dayOfYear, hourOfDay, secondOfDay } = time;
@@ -97,5 +93,5 @@ function observer(blob) {
 
 export const hud = {
     uuid: '/ux/hud',
-    observer
+    resolve
 };

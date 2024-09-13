@@ -1,53 +1,55 @@
 
-const config = globalThis.config;
+const waterLevel = globalThis.config.waterLevel
 
-function findRandomWaterLocation(currentPosition) {
-	const maxDistance = 20;
-	const waterPositions = db.getPositionsWithinElevationRange(-Infinity, config.waterLevel);
-	
-	const nearbyWaterPositions = waterPositions.filter(pos => 
-		Math.abs(pos.x - currentPosition.x) <= maxDistance &&
-		Math.abs(pos.z - currentPosition.z) <= maxDistance
-	);
+export function resolve(blob) {
+    if(!blob.time) return
+    const time = blob.time
+	const sys = blob._sys
+	const volume = sys.volume
 
-	if (nearbyWaterPositions.length > 0) {
-		const randomIndex = Math.floor(Math.random() * nearbyWaterPositions.length);
-		return nearbyWaterPositions[randomIndex];
+	const callback = (entity) => {
+
+		// set a home position once
+		if (!entity.waypoint) {
+			entity.waypoint = { ...entity.position }
+		}
+
+		// set a fishing location once
+		if(!entity.fishingLocation) {
+			volume.query({
+				position : entity.position,
+				minElevation:0,
+				maxElevation:waterLevel-1,
+				limit:1,
+				order:'random',
+				callback:(position,index)=>{
+					entity.fishingLocation = position
+				}
+			})
+		}
+
+		// Move to the starting waypoint in the evening
+		if (time.secondOfDay > time.eveningSeconds - 3600 && entity.waypoint) {
+			entity.position = { ...entity.waypoint, y: waterLevel }
+		}
+
+		// move to fishing location in the morning and not in the evening
+		else if (time.secondOfDay > time.morningSeconds + 3600 && entity.fishingLocation) {
+			entity.position = { ...entity.fishingLocation, y: waterLevel }
+		}
+
 	}
 
-	return null;
-}
+	// visit all boats
 
-export function observer(blob) {
-
-    if(!blob.tick) return
-    const time = blob.time
-
-	Object.values(db.entities).forEach(entity => {
-		if (!entity.boat) return
-		if (!entity.waypoint) {
-			entity.waypoint = { ...entity.position };
-		}
-		if (time.secondOfDay === time.morningSeconds + 3600) {
-			// Move to a random nearby location
-			if(!entity.fishingLocation) {
-				entity.fishingLocation = findRandomWaterLocation(entity.position);
-			}
-			if (entity.fishingLocation) {
-				entity.position = { ...entity.fishingLocation, y: config.waterLevel };
-			}
-		} else if (time.secondOfDay === time.eveningSeconds - 3600) {
-			// Move back to the starting waypoint
-			entity.position = { ...entity.waypoint, y: config.waterLevel };
-		}
-	})
+	volume.query({filter:{boat:true},callback})
 }
 
 export const boats = {
 	uuid: `/agents/boats`,
 	emitter: {
-		minElevation: 7,
-		maxElevation: 9,
+		minElevation: waterLevel - 2,
+		maxElevation: waterLevel - 1,
 		quantity: 50,
 		spawn: {
 			boat: true,
@@ -58,5 +60,5 @@ export const boats = {
 			},
 		}
 	},
-	observer
+	resolve
 }
