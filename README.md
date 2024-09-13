@@ -10,6 +10,6 @@ This model includes an island fishing village with people, boats, fish and coral
 
 The simulation is implemented in nodejs and leverages the browser for rendering. There's some emphasis on a data driven messaging pattern, there's less emphasis on performance at this stage.
 
-Agents are defined as ordinary json using an ECS like pattern. An entity is decorated with components that describe state such as rendering style, or if the agent is a person or a boat. Some of the agents include people, boats, fish, trees, buildings. There is an 'emitter' agent that can spawn other agents. There is also an agent that represents time, and there is an agent for solar radiation and day/night cycles.
+Agents are defined as ordinary json using an ECS like pattern. An entity is decorated with components that describe state such as rendering style, or other capabilities. There are people, boats, fish, trees, buildings. There is an emitter that can spawn collections of other entities. There is also time and day/night cycles.
 
 There is a systems wide message bus (see the sys module) and agent 'manifests' in javascript are inhaled into sys and every export from a manifest is passed as a message to all observers registered with sys. New observers can also be registered. Some important observers are registered early such as in-memory database (db) a renderer (volume).
