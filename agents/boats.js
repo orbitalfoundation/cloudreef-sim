@@ -28,12 +28,14 @@ export function resolve(blob) {
 			})
 		}
 
-		// Move to the starting waypoint in the evening
+		// move to the starting waypoint in the evening
+		// @todo it is expensive to set this over and over
 		if (time.secondOfDay > time.eveningSeconds - 3600 && entity.waypoint) {
 			entity.position = { ...entity.waypoint, y: waterLevel }
 		}
 
 		// move to fishing location in the morning and not in the evening
+		// @todo it is expensive to set this over and over
 		else if (time.secondOfDay > time.morningSeconds + 3600 && entity.fishingLocation) {
 			entity.position = { ...entity.fishingLocation, y: waterLevel }
 		}
