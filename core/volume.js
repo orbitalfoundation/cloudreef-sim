@@ -40,7 +40,7 @@ function add_scene(props) {
 	//controls.maxPolarAngle = Math.PI / 2
 	controls.update();
 
-	if(true) {
+	if(false) {
 		scene.add( new THREE.GridHelper( 16, 16 ) )
 		scene.add( new THREE.AxesHelper( 8 ) )
 	}
