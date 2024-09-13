@@ -25,7 +25,7 @@ function resolve(blob) {
 		}
 		*/
 
-		// build a query for nearest
+		// build a query - the filter is specified below
 		const query = {
 			position:entity.position,
 			order:'distance',
@@ -39,12 +39,16 @@ function resolve(blob) {
 			}
 		}
 
-		// @todo it is brittle to check exact time
-		if (time.secondOfDay === time.morningSeconds) {
-			query.filter = {boat:true}
-			volume.query(query)
-		} else if (time.secondOfDay === time.eveningSeconds) {
+		// @todo it is expensive to set this over and over
+		// @todo following the boats movement is expensive; should have a parent child relation
+
+		if (time.secondOfDay >= time.eveningSeconds) {
 			query.filter = {building:true}
+			volume.query(query)
+		}
+
+		else if (time.secondOfDay >= time.morningSeconds) {
+			query.filter = {boat:true}
 			volume.query(query)
 		}
 	}
@@ -64,7 +68,7 @@ export const people = {
 			people: true,
 			volume: { 
 				geometry: 'sphere', 
-				whd: [3,3,3],
+				whd: [2,2,2],
 				material: { color: 'gold' } 
 			},
 		}

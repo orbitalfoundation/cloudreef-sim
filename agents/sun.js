@@ -8,34 +8,38 @@ const slightlydifferentspeed = 1.1
 function resolve(blob) {
 	if(!blob.time) return
 	const time = blob.time
-	const sys = blob._sys
-	const db = sys.db
 
-	db.query({uuid:'/light/sun'},(sunEntity)=>{
-		const node = sunEntity.volume.node // @todo hack - improve position setter
+	const sun = (entity)=>{
+		const node = entity.volume.node // @todo hack - improve position setter
 		const radius = sundist
-		const sunAngle = time.seconds / time.secondsPerDay * Math.PI * 2 - Math.PI / 2
+		const angle = time.seconds / time.secondsPerDay * Math.PI * 2 - Math.PI / 2
 		// @todo it breaks separation of concerns and is a hack to peek at node directly
-		node.position.x = sunEntity.position.x = Math.cos(sunAngle) * radius / 2 + radius / 2
-		node.position.y = sunEntity.position.y = Math.sin(sunAngle) * radius / 2
-		node.position.z = sunEntity.position.z = radius / 2
-	})
+		node.position.x = entity.position.x = Math.cos(angle) * radius / 2 + radius / 2
+		node.position.y = entity.position.y = Math.sin(angle) * radius / 2
+		node.position.z = entity.position.z = radius / 2
+	}
 
-	db.query({uuid:'/light/moon'},(moonEntity)=>{
-		const node = moonEntity.volume.node
+	const moon = (entity)=>{
+		const node = entity.volume.node
 		const radius = moondist
 		const sunAngle = time.seconds / time.secondsPerDay * Math.PI * 2 - Math.PI / 2
 		const moonAngle = sunAngle * slightlydifferentspeed + Math.PI/8 
-		node.position.x = moonEntity.position.x = Math.cos(moonAngle) * radius / 2 + radius / 2
-		node.position.y = moonEntity.position.y = Math.sin(moonAngle) * radius / 2
-		node.position.z = moonEntity.position.z = radius / 2
+		node.position.x = entity.position.x = Math.cos(moonAngle) * radius / 2 + radius / 2
+		node.position.y = entity.position.y = Math.sin(moonAngle) * radius / 2
+		node.position.z = entity.position.z = radius / 2
 		node.rotation.y = node.y = moonAngle
-	})
+	}
+
+	// this works because of shared memory between volume and this declaration @todo revisit
+	sun(sunLight)
+	moon(moonLight)
+
 }
 
 export const sunLight = {
 	uuid: '/light/sun',
 	position: { x: 0, y: 0, z: 0 },
+	sun: true,
 	volume: {
 		geometry: 'directionalLight',
 		color: 0xffffff,
@@ -61,6 +65,7 @@ var worldTexture = textureLoader.load( worldURL );
 export const moonLight = {
 	uuid: '/light/moon',
 	position: { x: 0, y: 0, z: 0 },
+	moon: true,
 	volume: {
 		geometry: 'pointLight',
 		color: 0xaaaaff,
