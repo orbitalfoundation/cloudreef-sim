@@ -1,7 +1,7 @@
 
 const waterLevel = globalThis.config.waterLevel;
 
-function resolve(blob) {
+function people_system(blob) {
 
 	if(!blob.time) return
 	const time = blob.time
@@ -58,20 +58,21 @@ function resolve(blob) {
 	volume.query({filter:{people:true},callback})
 }
 
-export const people = {
-	uuid: `/agents/people`,
-	emitter: {
-		minElevation: waterLevel,
-		maxElevation: Infinity,
-		quantity: 10,
-		spawn: {
-			people: true,
-			volume: { 
-				geometry: 'sphere', 
-				whd: [2,2,2],
-				material: { color: 'gold' } 
-			},
-		}
+const people = {
+	people: true,
+	volume: { 
+		geometry: 'sphere', 
+		whd: [2,2,2],
+		material: { color: 'gold' } 
 	},
-	resolve
+}
+
+export const people_spawner = {
+	uuid: `/agents/peoples`,
+	emitter: {
+		range: [ waterLevel +1, waterLevel + 3 ],
+		quantity: 10,
+		spawn: people
+	},
+	resolve: people_system
 }

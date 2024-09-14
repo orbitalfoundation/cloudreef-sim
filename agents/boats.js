@@ -1,7 +1,7 @@
 
 const waterLevel = globalThis.config.waterLevel
 
-export function resolve(blob) {
+export function boat_system(blob) {
     if(!blob.time) return
     const time = blob.time
 	const sys = blob._sys
@@ -62,10 +62,9 @@ const boat = {
 export const boat_spawner = {
 	uuid: `/agents/boats`,
 	emitter: {
-		minElevation: waterLevel - 2,
-		maxElevation: waterLevel - 1,
+		range: [ waterLevel -2, waterLevel -1 ],
 		quantity: 50,
 		spawn: boat
 	},
-	resolve
+	resolve: boat_system
 }
