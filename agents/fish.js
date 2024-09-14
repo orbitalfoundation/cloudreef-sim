@@ -58,20 +58,27 @@ function resolve(blob) {
 
 }
 
-export const fish = {
+const fish = {
+	fish: true,
+	volume: { 
+		geometry: 'sphere',
+		material: { color: 0xC0C0C0 }  // Silver color
+	}
+}
+
+export const fish_spawner = {
 	uuid: `/agents/fish`,
 	resolve,
 	emitter: {
 		minElevation: 0,
 		maxElevation: globalThis.config.waterLevel - 1,
 		quantity: 500,
-		spawn: {
-			fish: true,
-			volume: { 
-				geometry: 'sphere',
-				material: { color: 0xC0C0C0 }  // Silver color
-			},
-		}
+		spawn: fish
 	}
 }
+
+
+
+
+
 

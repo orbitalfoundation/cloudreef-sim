@@ -25,7 +25,7 @@ function resolve(blob) {
 		}
 		*/
 
-		// build a query - the filter is specified below
+		// query for spatially nearest match and then move this entity to that location
 		const query = {
 			position:entity.position,
 			order:'distance',

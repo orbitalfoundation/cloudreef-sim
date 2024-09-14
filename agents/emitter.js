@@ -2,6 +2,7 @@
 function resolve(blob) {
 
 	// filter for new emitter events - @todo smarter resolve filtering
+
 	if(blob.tick) return
 	if(!blob.emitter) return
 	if(blob.emitter.latched) return
@@ -9,19 +10,19 @@ function resolve(blob) {
 	emitter.latch = true;
 
 	// create a new entity on demand at position
+	// note currently sys does _not_ make sure objects are unique @todo improve
+
 	const callback = (position,index) => {
-		// @todo volume property is being conserved - must not do so
-		const volume = { ...emitter.spawn.volume }
-		const spawn = { ...emitter.spawn }
-		spawn.volume = volume
+		var duplicated = JSON.parse(JSON.stringify(emitter.spawn))
 		sys.resolve({
-			...spawn,
+			...duplicated,
 			position: position,
 			uuid: `${blob.uuid}/${index}`
 		})
 	}
 
 	// directly query volume (which is exposed on sys) for spatial positions to create entities
+
 	sys.volume.query({
 		minElevation:emitter.minElevation,
 		maxElevation:emitter.maxElevation,
