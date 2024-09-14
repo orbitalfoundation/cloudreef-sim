@@ -12,6 +12,11 @@ const buildings = {
 
 export const buildings_spawner = {
 	uuid: `/emitter/buildings`,
+	volume: {
+		geometry: 'cube',
+		material: { color: 'black' },
+		whd: [10,10,10]
+	},
 	emitter: {
 		range:[ waterLevel, waterLevel + 2 ],
 		quantity: 50,

@@ -61,6 +61,11 @@ const boat = {
 
 export const boat_spawner = {
 	uuid: `/agents/boats`,
+	volume: {
+		geometry: 'cube',
+		material: { color: 'black' },
+		whd: [10,10,10]
+	},
 	emitter: {
 		range: [ waterLevel -2, waterLevel -1 ],
 		quantity: 50,

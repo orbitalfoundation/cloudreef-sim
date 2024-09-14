@@ -22,10 +22,10 @@ export const manifest = {
 		'./agents/fish.js',
 		'./agents/organism.js',
 
-//		'./agents/trees.js',
-//		'./agents/buildings.js',
-//		'./agents/boats.js',
-//		'./agents/people.js',
+		'./agents/trees.js',
+		'./agents/buildings.js',
+		'./agents/boats.js',
+		'./agents/people.js',
 
 		// introduce an idea of time
 		'./agents/time.js',

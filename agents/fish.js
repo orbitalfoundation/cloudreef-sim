@@ -7,7 +7,7 @@ const fish = {
 	},
 	organism: {
 		range: [0, waterLevel-1 ],
-		searchRadius: 1000,
+		searchRadius: 20,
 		consumes: 'phytoplankton',
 		spawnHints: {
 			fish: {
@@ -29,9 +29,14 @@ const fish = {
 
 export const fish_spawner = {
 	uuid: `/agents/fishes`,
+	volume: {
+		geometry: 'cube',
+		material: { color: 'black' },
+		whd: [10,10,10]
+	},
 	emitter: {
 		range: [ 0, waterLevel-1 ],
-		quantity: 1,
+		quantity: 10,
 		spawn: fish
 	}
 }

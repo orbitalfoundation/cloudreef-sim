@@ -1,35 +1,66 @@
 
-function resolve(blob) {
+function emit(sys,entity) {
 
-	// filter for new emitter events - @todo smarter resolve filtering
+	// get emitter component
+	const emitter = entity.emitter
 
-	if(blob.tick) return
-	if(!blob.emitter) return
-	if(blob.emitter.latched) return
-	const emitter = blob.emitter
-	emitter.latch = true;
+	// if the emitter is done then exit
+	if(emitter.latched) {
+		return
+	}
 
-	// create a new entity on demand at position
-	// note currently sys does _not_ make sure objects are unique @todo improve
+	// maximum to create
+	let limit = emitter.quantity || 100
 
-	const callback = (position,index) => {
+	emitter.latched = true
+
+	// if the emitter does not have a rate then it is a one shot
+	if(!emitter.rate) {
+		emitter.latched = true
+	}
+
+	// otherwise there may still be a ceiling on the total number spawned
+	else {
+		let candidates = sys.volume.query({filter:emitter.filter})
+		limit = emitter.quantity - candidates.length
+		if(limit<=0) return
+		console.log(candidates.length,limit,emitter.quantity)
+	}
+
+	// a callback that is supplied a location to create a new entity on demand at
+	const createEntities = (position,index) => {
 		var duplicated = JSON.parse(JSON.stringify(emitter.spawn))
 		sys.resolve({
 			...duplicated,
 			position: position,
-			uuid: `${blob.uuid}/${index}`
+			uuid: `${entity.uuid}/${index}`
 		})
 	}
 
-	// directly query volume (which is exposed on sys) for spatial positions to create entities
-
+	// query spatial volume for a collection of valid positions to create entities at and pass these to callback above
 	sys.volume.query({
 		minElevation:emitter.range[0] || 0,
 		maxElevation:emitter.range[1] || Infinity,
-		limit:emitter.quantity || 100,
-		order:'random',
-		callback,
+		limit,
+		callback : createEntities,
 	})
+}
+
+function resolve(blob) {
+
+	// ignore all events except time events
+	if(!blob.time) return
+
+	// reduce the call frequency - @todo improve
+	if(Math.random() > 0.1) return
+
+	// invoke all emitters
+	const sys = blob._sys
+	sys.volume.query({filter:{emitter:true},callback:(entity)=>{
+		emit(sys,entity)
+	}})
+
+
 
 }
 
@@ -37,5 +68,9 @@ export const emitter = {
 	uuid:'/agents/emitter',
 	resolve
 }
+
+// - if i want to only run once then i set a rate of 0
+// - if i want to run on ticks then i think i have to scour for emitters
+// - 
 
 
