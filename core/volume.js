@@ -83,15 +83,6 @@ function generateIslandElevationWithPerlin(size,seed=42) {
 
 function update(entity) {
 
-	// obliterate?
-	if(entity.obliterate) {
-		if(entity.volume && entity.volume.node) {
-			scene.remove(entity.volume.node)
-			entity.volume.node = null
-		}
-		return
-	}
-
 	// for now let's hold onto the entities to allow for spatial queries locally
 	// spatial queries fit into a role this module has - it's debatable precisely how to do them @todo improve
 	if(entity.uuid) {
@@ -183,7 +174,7 @@ function update(entity) {
 				const elevations = entity.volume.elevations = generateIslandElevationWithPerlin(width,height)
 				const vertices = geometry.attributes.position.array;
 				for (let i = 0, j = 0; i < vertices.length; i += 3, j++) {
-					vertices[i + 2] = elevations[j]
+					vertices[i + 2] = elevations[j] = 0
 				}
 				geometry.computeVertexNormals();
 				geometry.attributes.position.needsUpdate = true;
@@ -249,9 +240,20 @@ function resolve(blob) {
 
 	const interpolationRate = 0.1
 
+	// deletions
+	Object.values(entities).forEach(entity => {
+		if(entity.obliterate) {
+			if(entity.volume && entity.volume.node) {
+				scene.remove(entity.volume.node)
+				entity.volume.node = null
+			}
+			delete entities[entity.uuid]
+		}
+	})
+
+	// updates - interpolation helper
 	Object.values(entities).forEach(entity => {
 
-		// Interpolate X, Y, and Z positions
 		if (entity.volume.node && entity.position) {
 			entity.volume.node.position.x += (entity.position.x - entity.volume.node.position.x) * interpolationRate;
 			entity.volume.node.position.y += (entity.position.y - entity.volume.node.position.y) * interpolationRate;
@@ -262,16 +264,24 @@ function resolve(blob) {
 			entity.volume.node.rotation.x += (entity.rotation.x - entity.volume.node.rotation.x) * interpolationRate;
 			entity.volume.node.rotation.y += (entity.rotation.y - entity.volume.node.rotation.y) * interpolationRate;
 			entity.volume.node.rotation.z += (entity.rotation.z - entity.volume.node.rotation.z) * interpolationRate;
-			console.log(entity.volume.node.rotation)
 		}
 
 	});
+
 }
 
+///
+/// spatial query support
+/// supports both querying bitmap layers and also 3d objects
+/// currently unoptimized
+/// later will use sparse voxel mesh
+///
 
 function query(props) {
 
-	// detect if layer query - perform separately and return
+	//
+	// layer queries (into bitmaps) are performed separately / disjointly with any other query
+	//
 
 	if(props.hasOwnProperty('minElevation')) {
 
@@ -294,7 +304,7 @@ function query(props) {
 					continue;
 				}
 				const y = data[index];
-				if (y > minElevation && y <= maxElevation) {
+				if (y >= minElevation && y <= maxElevation) {
 					positions.push({ x,y,z })
 				}
 			}
@@ -309,6 +319,9 @@ function query(props) {
 			)
 		}
 
+		// nothing?
+		if(!positions.length) return
+
 		// return the desired number of candidates
 		for(let i = 0; i < limit; i++) {
 			const randomIndex = Math.floor(Math.random() * positions.length);
@@ -320,9 +333,11 @@ function query(props) {
 		return
 	}
 
+	//
 	// for non layer searches optionally pre-filter candidates
 	// @todo note it is expensive to do this; hashing of components would help
 	// @todo note this also duplicates some of the query capabilities of other components
+	//
 
 	const query_matches = (args,candidate) => {
 		for (const [key,val] of Object.entries(args)) {
@@ -351,33 +366,36 @@ function query(props) {
 		return
 	}
 
+	//
 	// return all candidates if no other filters
+	//
 
 	if(!props.position) {
 		candidates.forEach(entity=>{
 			props.callback(entity)
 		})
-		return
 	}
 
-	// return nearest match only?
+	//
+	// else return nearest match only
 	// @todo note a real spatial hash would be less costly
+	//
 
-	if(props.position) {
+	else {
 
 		const position = props.position
-		let nearestEntity = null;
-		let minDistance = Infinity;
+		let minDistance = props.radius || Infinity
+		let nearestEntity = null
 
 		candidates.forEach(entity => {
-			if(props.filter && !query_matches(props.filter,entity)) return
 			const distance = Math.sqrt(
 				Math.pow(position.x - entity.position.x, 2) +
+				Math.pow(position.y - entity.position.y, 2) +
 				Math.pow(position.z - entity.position.z, 2)
 			)
 			if (distance < minDistance) {
-				minDistance = distance;
-				nearestEntity = entity;
+				minDistance = distance
+				nearestEntity = entity
 			}
 		})
 
@@ -385,7 +403,6 @@ function query(props) {
 			props.callback(nearestEntity)
 		}
 	}
-
 }
 
 export const volume = {

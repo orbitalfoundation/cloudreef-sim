@@ -24,9 +24,9 @@ function resolve(blob) {
 	// directly query volume (which is exposed on sys) for spatial positions to create entities
 
 	sys.volume.query({
-		minElevation:emitter.minElevation,
-		maxElevation:emitter.maxElevation,
-		limit:emitter.quantity,
+		minElevation:emitter.range[0] || 0,
+		maxElevation:emitter.range[1] || Infinity,
+		limit:emitter.quantity || 100,
 		order:'random',
 		callback,
 	})

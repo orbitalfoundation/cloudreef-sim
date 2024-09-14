@@ -18,11 +18,14 @@ export const manifest = {
 
 		// sprinkle ecosystem with participants
 		'./agents/emitter.js',
-		'./agents/trees.js',
-		'./agents/buildings.js',
-		'./agents/boats.js',
+		'./agents/phytoplankton.js',
 		'./agents/fish.js',
-		'./agents/people.js',
+		'./agents/organism.js',
+
+//		'./agents/trees.js',
+//		'./agents/buildings.js',
+//		'./agents/boats.js',
+//		'./agents/people.js',
 
 		// introduce an idea of time
 		'./agents/time.js',
