@@ -1,5 +1,19 @@
 
+	- right now people system iterates people and does work on them
+		could i instead have a declarative format
+		people would define triggers, and then 
+
+	- richer fish model
+
+	- i'd like to be able to push agents to a server and have them run there
+
+	- i'd also like to be able to use wasm blobs
+
+	- i'd love to upload changes without stopping
+
 ## core framework todos
+
+	- perhaps rename volume to 'spatial' ?
 
 	- sys resolve() will store raw objects to db and to volume and it exposes a risk
 	  on the one hand it is convenient to be able to directly edit artifacts as declared in a manifest

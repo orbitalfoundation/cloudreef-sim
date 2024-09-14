@@ -10,12 +10,12 @@ export function resolve(blob) {
 	const callback = (entity) => {
 
 		// set a home position once
-		if (!entity.waypoint) {
-			entity.waypoint = { ...entity.position }
+		if (!entity.boat.waypoint) {
+			entity.boat.waypoint = { ...entity.position }
 		}
 
 		// set a fishing location once
-		if(!entity.fishingLocation) {
+		if(!entity.boat.fishingLocation) {
 			volume.query({
 				position : entity.position,
 				minElevation:0,
@@ -23,21 +23,21 @@ export function resolve(blob) {
 				limit:1,
 				order:'random',
 				callback:(position,index)=>{
-					entity.fishingLocation = position
+					entity.boat.fishingLocation = position
 				}
 			})
 		}
 
 		// move to the starting waypoint in the evening
 		// @todo it is expensive to set this over and over
-		if (time.secondOfDay > time.eveningSeconds - 3600 && entity.waypoint) {
-			entity.position = { ...entity.waypoint, y: waterLevel }
+		if (time.secondOfDay > time.eveningSeconds - 3600 && entity.boat.waypoint) {
+			entity.position = { ...entity.boat.waypoint, y: waterLevel }
 		}
 
 		// move to fishing location in the morning and not in the evening
 		// @todo it is expensive to set this over and over
-		else if (time.secondOfDay > time.morningSeconds + 3600 && entity.fishingLocation) {
-			entity.position = { ...entity.fishingLocation, y: waterLevel }
+		else if (time.secondOfDay > time.morningSeconds + 3600 && entity.boat.fishingLocation) {
+			entity.position = { ...entity.boat.fishingLocation, y: waterLevel }
 		}
 
 	}
@@ -47,20 +47,25 @@ export function resolve(blob) {
 	volume.query({filter:{boat:true},callback})
 }
 
-export const boats = {
+const boat = {
+	boat: {
+		waypoint: null,
+		fishingLocation: null,
+	},
+	volume: { 
+		geometry: 'box', 
+		whd: [3, 5, 3], 
+		material: { color: 'blue' } 
+	},
+}
+
+export const boat_spawner = {
 	uuid: `/agents/boats`,
 	emitter: {
 		minElevation: waterLevel - 2,
 		maxElevation: waterLevel - 1,
 		quantity: 50,
-		spawn: {
-			boat: true,
-			volume: { 
-				geometry: 'box', 
-				whd: [3, 5, 3], 
-				material: { color: 'blue' } 
-			},
-		}
+		spawn: boat
 	},
 	resolve
 }
