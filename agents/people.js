@@ -69,6 +69,11 @@ const people = {
 
 export const people_spawner = {
 	uuid: `/agents/peoples`,
+	volume: {
+		geometry: 'cube',
+		material: { color: 'black' },
+		whd: [10,10,10]
+	},
 	emitter: {
 		range: [ waterLevel +1, waterLevel + 3 ],
 		quantity: 10,

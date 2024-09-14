@@ -83,6 +83,11 @@ function generateIslandElevationWithPerlin(size,seed=42) {
 
 function update(entity) {
 
+	// ignore entities that have no volume
+	if(!entity.volume) {
+		return
+	}
+
 	// for now let's hold onto the entities to allow for spatial queries locally
 	// spatial queries fit into a role this module has - it's debatable precisely how to do them @todo improve
 	if(entity.uuid) {
@@ -139,6 +144,7 @@ function update(entity) {
 			entity.volume.node.add( new THREE.Mesh(new THREE.CylinderGeometry(0.5, 10, 10, 8), material ) )
 			break
 
+		case 'cube':
 		case 'box':
 			geometry = new THREE.BoxGeometry(1,1,1);
 			entity.volume.node = new THREE.Mesh(geometry, material);
@@ -174,7 +180,7 @@ function update(entity) {
 				const elevations = entity.volume.elevations = generateIslandElevationWithPerlin(width,height)
 				const vertices = geometry.attributes.position.array;
 				for (let i = 0, j = 0; i < vertices.length; i += 3, j++) {
-					vertices[i + 2] = elevations[j] = 0
+					vertices[i + 2] = elevations[j]
 				}
 				geometry.computeVertexNormals();
 				geometry.attributes.position.needsUpdate = true;
@@ -230,12 +236,12 @@ function resolve(blob) {
 	// stuff volume into sys for now - still debating the right way to expose this for queries if at all
 	sys.volume = this
 
-	// perform operations on a volume - such as create 3js node
+	// was passed a volume - do work on it
 	if(blob.volume) {
 		update(blob)
 	}
 
-	// below this only handle time
+	// was passed time - update time
 	if(!blob.time) return
 
 	const interpolationRate = 0.1
@@ -279,6 +285,8 @@ function resolve(blob) {
 
 function query(props) {
 
+	const callback = props.callback
+
 	//
 	// layer queries (into bitmaps) are performed separately / disjointly with any other query
 	//
@@ -287,7 +295,6 @@ function query(props) {
 
 		const minElevation = props.minElevation || 0
 		const maxElevation = props.maxElevation || Infinity
-		const callback = props.callback
 		const order = props.order
 		const limit = props.limit
 
@@ -310,6 +317,19 @@ function query(props) {
 			}
 		}
 
+		// always randomly sort the collection
+		// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+
+		const shuffle = (array) => {
+			let currentIndex = array.length
+			while (currentIndex != 0) {
+				let randomIndex = Math.floor(Math.random() * currentIndex)
+				currentIndex--
+				[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
+			}
+		}
+		shuffle(positions)
+
 		// also filter by a position?
 		if(props.position) {
 			const maxDistance = 20
@@ -326,11 +346,11 @@ function query(props) {
 		for(let i = 0; i < limit; i++) {
 			const randomIndex = Math.floor(Math.random() * positions.length);
 			const position = positions[randomIndex];
-			callback(position,i)
+			if(callback) callback(position,i)
 		}
 
-		// do not fall thru
-		return
+		// do not fall thru - but do return the positions also
+		return positions
 	}
 
 	//
@@ -363,7 +383,7 @@ function query(props) {
 	// return nothing if no candidates
 
 	if(!candidates.length) {
-		return
+		return []
 	}
 
 	//
@@ -372,7 +392,7 @@ function query(props) {
 
 	if(!props.position) {
 		candidates.forEach(entity=>{
-			props.callback(entity)
+			if(callback)callback(entity)
 		})
 	}
 
@@ -400,14 +420,17 @@ function query(props) {
 		})
 
 		if(nearestEntity) {
-			props.callback(nearestEntity)
+			if(callback)callback(nearestEntity)
 		}
 	}
+
+	// also return the candidates as a convenience
+	return candidates
 }
 
 export const volume = {
 	uuid: '/core/volume',
-	resolve : resolve,
+	resolve,
 	query,
 	terrain: () => { return layer } // @todo hack
 }
