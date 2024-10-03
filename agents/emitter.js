@@ -24,7 +24,7 @@ function emit(sys,entity) {
 		let candidates = sys.volume.query({filter:emitter.filter})
 		limit = emitter.quantity - candidates.length
 		if(limit<=0) return
-		console.log(candidates.length,limit,emitter.quantity)
+		//console.log(candidates.length,limit,emitter.quantity)
 	}
 
 	// a callback that is supplied a location to create a new entity on demand at

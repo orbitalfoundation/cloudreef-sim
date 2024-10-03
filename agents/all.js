@@ -6,32 +6,32 @@ export const manifest = {
 	load: [
 
 		// general settings - load this first since it is exposed as a global
-		'./agents/config.js',
+		'./config.js',
 
 		// setup scene and camera for display
-		'./agents/scene.js',
+		'./scene.js',
 
 		// let there be land, part the seas and first light
-		'./agents/terrain.js',
-		'./agents/ocean.js',
-		'./agents/sun.js',
+		'./terrain.js',
+		'./ocean.js',
+		'./sun.js',
 
 		// sprinkle ecosystem with participants
-		'./agents/emitter.js',
-		'./agents/phytoplankton.js',
-		'./agents/fish.js',
-		'./agents/organism.js',
+		'./emitter.js',
+		'./phytoplankton.js',
+		'./fish.js',
+		'./organism.js',
 
-		'./agents/trees.js',
-		'./agents/buildings.js',
-		'./agents/boats.js',
-		'./agents/people.js',
+		'./trees.js',
+		'./buildings.js',
+		'./boats.js',
+		'./people.js',
 
 		// introduce an idea of time
-		'./agents/time.js',
+		'./time.js',
 
 		// introduce a heads up display showing stats
-		'./agents/hud.js',
+		'./hud.js',
 
 		// other analytics; jupyter notebook kinds of graphs over time
 	//    './ux/reflect.js',

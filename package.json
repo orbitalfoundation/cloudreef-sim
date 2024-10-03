@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "layers.js",
   "scripts": {
-    "dev": "node index.js"
+    "dev": "tiny-server"
   },
   "author": "",
   "license": "ISC",
