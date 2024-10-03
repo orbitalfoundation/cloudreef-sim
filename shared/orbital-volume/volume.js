@@ -1,4 +1,9 @@
 
+import * as THREE from './three/three.module.js'
+globalThis.THREE = THREE
+
+import { OrbitControls } from './three/addons/controls/OrbitControls.js'
+
 let scene = null
 let renderer = null
 let camera = null
@@ -30,7 +35,7 @@ function add_scene(props) {
 	camera.position.set(...cameraPosition)
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-	controls = new THREE.OrbitControls(camera, renderer.domElement);
+	controls = new OrbitControls(camera, renderer.domElement);
 	controls.target = new THREE.Vector3(...cameraTarget)
 	controls.enableDamping = true
 	controls.dampingFactor = 0.05
@@ -55,7 +60,7 @@ function add_scene(props) {
 }
 
 
-import { PerlinNoise } from '../libs/perlin.js'
+import { PerlinNoise } from './perlin.js'
 
 function generateIslandElevationWithPerlin(size,seed=42) {
 	const data = new Uint8Array(size*size)

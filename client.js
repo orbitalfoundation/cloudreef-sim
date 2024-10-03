@@ -1,8 +1,8 @@
 
-import './core/sys.js'
+import './shared/orbital/sys.js'
 sys.resolve({
 	load:[
-		'/core/volume.js',
+		'/shared/orbital-volume/volume.js',
 		'/agents/all.js'
 	]
 })
