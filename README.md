@@ -2,7 +2,7 @@
 
 This is a a coastal reef ecology simulation.This model includes an island fishing village with people, boats, fish and coral. Uses 3js for visualization and claude/aider for development.
 
-See a demo at https://orbitalfoundation.github.io/orbital-reef/
+See a demo at https://orbitalfoundation.github.io/cloudreef-sim/
 
 ![reef](assets/screenshot.png?raw=true "reef")
 
