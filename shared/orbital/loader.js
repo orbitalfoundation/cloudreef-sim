@@ -8,9 +8,23 @@ async function resolve(blob) {
 	for (let file of files) {
 
 		// support './' notation for relative asset paths
-		if(file[0]=='.' && file[1]=='/' && blob._metadata && blob._metadata.base) {
-			const url = new URL(blob._metadata.base + file.substring(1))
-			file = url.pathname
+		if(file[0]=='.' && file[1]=='/') {
+			if(blob._metadata && blob._metadata.file) {
+				const base = blob._metadata.file.substring(0,blob._metadata.file.lastIndexOf('/'))
+				file = base + file.substring(1)
+			} else if(blob.anchor) {
+				// given than an anchor is a filename find the base path segment safely
+				const base = blob.anchor.substring(0,blob.anchor.lastIndexOf('/'))
+				file = base + file.substring(1)
+			} else {
+				console.error('sys loader unanchored path speculation not fully supported yet')
+			}
+		} else if(file[0]=='/') {
+
+		} else {
+			// @todo add import map support later
+			// there's a design defect in browser importmaps that they cannot be modified after module imports
+			// console.warn('sys loader may not support unanchored paths',file[0])
 		}
 
 		// avoid loading a file twice
@@ -21,8 +35,7 @@ async function resolve(blob) {
 		const module = await import(file);
 		for (const [key, blob] of Object.entries(module)) {
 			if (typeof blob !== 'object') continue
-			const base = window.location.origin + file.substring(0,file.lastIndexOf('/'))
-			blob._metadata = { base, file, key }
+			blob._metadata = { file, key }
 			await sys.resolve(blob)
 		}
 	}
