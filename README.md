@@ -1,6 +1,12 @@
-# Reef Sim
+# Cloudreef-Sim - Nov 2024
 
-This is a a coastal reef ecology simulation.This model includes an island fishing village with people, boats, fish and coral. Uses 3js for visualization and claude/aider for development.
+This demo exercises a few distinct ideas:
+
+- How well can tools like Claude/Aider reason about source code, specifically for agent based sims?
+- Can these tools be used for building simulations more easily and accessibly?
+- Can we build any kind of visually appealing, reasonably fast toy simulation?
+
+In this demo we stage a conceptual island reef ecology, with land and water. There are 'homes' with people, boats, fish. In the morning the fisher-folk go the boats and fish, and in the evening they return home. Fish reproduce at a rate, and require food.
 
 See a demo at https://orbitalfoundation.github.io/cloudreef-sim/
 
@@ -10,15 +16,8 @@ See a demo at https://orbitalfoundation.github.io/cloudreef-sim/
 
 Run tiny-server (or any http server) in the root folder and visit with a browser.
 
-## Overview
+## Technical design
 
-This is a test of using aider and claude sonnet to write applications. Typically tools like Copilot can help with code review and bug fixes, but here we are allowing Claude to inhale the entire source code, and structuring the code in a way that is easy to reason about, and then seeing if we can entirely build apps directorially and conversationally.
+A pub/sub message broker (see https://github.com/orbitalfoundation/orbital-sys ) is used to decouple code fragments. 'Agents' are defined as 'ECS' entities decorated with components and with a 'time' function triggering system updates. Also a concept of 'manifests' is used to load the initial system state and behavior.
 
-## Design Considerations
-
-The simulation is implemented in nodejs and leverages the browser for rendering. There's some emphasis on a data driven messaging pattern, there's less emphasis on performance at this stage.
-
-Agents are defined as ordinary json using an ECS like pattern. An entity is decorated with components that describe state such as rendering style, or other capabilities. There are people, boats, fish, trees, buildings. There is an emitter that can spawn collections of other entities. There is also time and day/night cycles.
-
-There is a systems wide message bus (see the sys module) and agent 'manifests' in javascript are inhaled into sys and every export from a manifest is passed as a message to all observers registered with sys. New observers can also be registered. Some important observers are registered early such as in-memory database (db) a renderer (volume).
-
+The orbital-volume service reacts to state changes and paints those changes to the display; decoupling state from rendering. It also (at the moment) has a database that can be queried. This needs to be revisted as a concept.

@@ -1,7 +1,7 @@
 {
   "name": "sim",
-  "version": "1.0.0",
-  "main": "layers.js",
+  "version": "1.0.1",
+  "main": "client.js",
   "scripts": {
     "dev": "tiny-server"
   },
@@ -9,7 +9,7 @@
   "license": "ISC",
   "description": "",
   "type": "module",
-  "dependencies": {
+  "dev-dependencies": {
     "tiny-server": "^1.1.1"
   }
 }

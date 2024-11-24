@@ -2,7 +2,7 @@
 // @todo could use meta information to find local path as a load hint
 
 export const manifest = {
-
+	anchor: import.meta.url,
 	load: [
 
 		// general settings - load this first since it is exposed as a global

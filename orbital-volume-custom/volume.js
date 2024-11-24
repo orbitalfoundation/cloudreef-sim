@@ -234,9 +234,7 @@ function update(entity) {
 
 }
 
-function resolve(blob) {
-
-	const sys = blob._sys
+function resolve(blob,sys) {
 
 	// stuff volume into sys for now - still debating the right way to expose this for queries if at all
 	sys.volume = this

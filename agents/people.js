@@ -1,11 +1,10 @@
 
 const waterLevel = globalThis.config.waterLevel;
 
-function people_system(blob) {
+function people_system(blob,sys) {
 
 	if(!blob.time) return
 	const time = blob.time
-	const sys = blob._sys
 	const volume = sys.volume
 
 	const peopleElevation = 2.5;

@@ -143,9 +143,8 @@ function organismUpdate(sys,entity,volume,terrain) {
 
 }
 
-function organismSystem(blob) {
+function organismSystem(blob,sys) {
 	if (!blob.time) return
-	const sys = blob._sys
 	const volume = sys.volume
 	const terrain = volume.terrain()
 	volume.query({
