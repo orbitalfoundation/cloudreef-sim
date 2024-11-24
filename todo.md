@@ -1,59 +1,30 @@
 
-## core framework todos
+#  Todo - Nov 2024
 
-	- perhaps rename volume to 'spatial' ?
+1) Volumetric queries.
 
-	- sys resolve() will store raw objects and to volume and it exposes a risk
-	  on the one hand it is convenient to be able to directly edit artifacts as declared in a manifest
-	  but on the other hand there's a risk of shared state where it isn't wanted; such as in emitter
-	  need to think about what the formal policy should be here; could it be an option?
+What we are seeing is a need for a much richer spatial / volumetric query support. I did ask Claude to write a spatial indexing function using a sparse voxel octree ( see https://gist.github.com/anselm/b372ef016517424eec20ea0ba196d5ab ) which could be used. But generally speaking there's a class of spatial queries and spatial indexing that needs to be performant.
 
-	- richer query support formalization
-	  there's a fundamental need for richer spatial queries and hashing; such as sparse voxel hashes
-	  but exposing volume directly kind of defeats the separation of concerns...
-	  also the ecs queries for components arguably could be clarified such as sys.ecs not sys.db?
+At the moment a simpler 2d version of these queries are stuffed into the Volume service. This is kind of a hack, and it needs work, and is currently computationally expensive.
 
-	- volume to improve
-		- note that the entity.position concept is incorrect - it should be entity.volume.position
-		- obliterate needs to be completed
-		- allow lights to have richer geometry
-		- first person
-		- adjust scales of entities to be human scale
+2) Time
 
-	- miscellaneous
-		- improve the admin and analytics interface
-		- do a jupyter notebooks style analytics display
-		- generate comments
-		- perhaps it is possible to expose a richer documentation concept in general?
-		- regression tests unit tests
-		- move to typescript with rollup or esbuild
+At the moment I am ignoring the orbital-sys provided tick method - I should merge the ideas there with the local 'time' service.
 
-## agent features to improve
+3) Volume itself
 
-	- run persistently in clould
-		allow revising agents without stopping server
-		wasm blobs
+Note that this instance of orbital-volume should be merged with the npm orbital-volume. There are several small defects here, such as entity.position should become entity.volume.position . Also respecting the concept of 'obliterate'. As well all scales should be in real world units. A first person mode would be nice as well.
 
-	- corals
+4) Analytics
 
-	- fish
-		- use the day night schedule timers
-		- obstacle avoidance is required
-		- currently do not change elevations
-		- reproduce near corals only; coral nurseries
+It looks like the value of simulations like this depends on a much richer analytics interface - see jupyter notebooks. There may also be real value in runtime views enumerating all objects.
 
-	- people
-		- right now persons and other entities don't have a correct memoization of their starting position; this could use improvement
-		- people have a lifespan
-		- people have energy budget
-		- people harvest fish for energy
-		- people die
-		- people give birth
-		- people have childhoods
-		- people harvest trees to build boats
-		- people harvest trees to build shelter
-		- people have some kind of affinity to a home and or work
-		- people should move with boats
-		- harvest actual fish via people
+5) Persistent WASM blobs / Server Side
 
+At the moment this runs in the browser - for larger scale durable sims it may make sense to have a headless mode on a server.
 
+6) Improved richness of model
+
+A richer simulation would include corals, turbidity, temperature, nutrients, sterility and many other factors. Also fish would better respect time and have day/night awareness. It may be necessary to simulate at a fixed rate even if only rendering infrequently; decoupling rendering from simulation. Fish should school and have more intelligent object avoidance. There should be reproductive strategies that involve coral reef nurseries, based on real data.
+
+Human participants generally need a much richer model (for any sim project not just this one). This may be a separate effort. This includes concepts like a lifespan, an energy budget, a cognitive budget, eating, dying, children, childhoods, resource scavenging, building, consensus mechanisms and many other factors.

@@ -1,10 +1,9 @@
 
 const waterLevel = globalThis.config.waterLevel
 
-export function boat_system(blob) {
+function boat_system(blob,sys) {
     if(!blob.time) return
     const time = blob.time
-	const sys = blob._sys
 	const volume = sys.volume
 
 	const callback = (entity) => {

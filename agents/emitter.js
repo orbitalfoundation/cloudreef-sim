@@ -46,7 +46,7 @@ function emit(sys,entity) {
 	})
 }
 
-function resolve(blob) {
+function resolve(blob,sys) {
 
 	// ignore all events except time events
 	if(!blob.time) return
@@ -55,12 +55,9 @@ function resolve(blob) {
 	if(Math.random() > 0.1) return
 
 	// invoke all emitters
-	const sys = blob._sys
 	sys.volume.query({filter:{emitter:true},callback:(entity)=>{
 		emit(sys,entity)
 	}})
-
-
 
 }
 

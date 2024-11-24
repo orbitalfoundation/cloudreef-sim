@@ -47,13 +47,12 @@ async function run(sys) {
 	} , delay)
 }
 
-function resolve(blob) {
+function resolve(blob,sys) {
 
 	// use a latch so that resolve is run once only; @todo introduce an initialization concept?
 	if(time.latch) return
 	time.latch = true
 
-	const sys = blob._sys
 	run(sys)
 }
 
