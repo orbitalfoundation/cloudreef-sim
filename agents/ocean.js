@@ -17,7 +17,7 @@ export const oceanEntity = {
 			color: 0x1e90ff, // Ocean color (DeepSkyBlue)
 			opacity: 0.5,
 			transparent: true,
-			side: THREE.DoubleSide
+			side: 2
 		}
 	}
 }
