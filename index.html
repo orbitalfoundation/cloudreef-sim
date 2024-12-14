@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orbital Reef</title>
+<title>CloudReef Sim</title>
+<script type="importmap">
+{
+    "imports": {
+		"three": "https://unpkg.com/three@0.148.0/build/three.module.js",
+		"three/addons/": "https://unpkg.com/three@0.148.0/examples/jsm/",
+		"orbital/": "./shared/orbital/",
+		"assets/": "./assets/",
+		"here/": "./"
+    }
+}
+</script>
 <style>
 body { margin: 0; }
 canvas { display: block; }
@@ -12,4 +23,4 @@ canvas { display: block; }
 <body></body>
 </html>
 
-<script type="module" src="client.js"></script>
+<script type="module" src="index.js"></script>

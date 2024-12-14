@@ -30,11 +30,19 @@ function emit(sys,entity) {
 	// a callback that is supplied a location to create a new entity on demand at
 	const createEntities = (position,index) => {
 		var duplicated = JSON.parse(JSON.stringify(emitter.spawn))
-		sys.resolve({
+
+		if(!duplicated.volume.pose) duplicated.volume.pose = {}
+		duplicated.volume.pose.position = {
+			x: position.x,
+			y: position.y,
+			z: position.z
+		}
+
+		const blob = {
 			...duplicated,
-			position: position,
 			uuid: `${entity.uuid}/${index}`
-		})
+		}
+		sys.resolve(blob)
 	}
 
 	// query spatial volume for a collection of valid positions to create entities at and pass these to callback above
@@ -49,7 +57,7 @@ function emit(sys,entity) {
 function resolve(blob,sys) {
 
 	// ignore all events except time events
-	if(!blob.time) return
+	if(!blob.time || typeof blob.time !== 'object') return
 
 	// reduce the call frequency - @todo improve
 	if(Math.random() > 0.1) return
@@ -66,8 +74,8 @@ export const emitter = {
 	resolve
 }
 
+// @todo revisit emitter concept
 // - if i want to only run once then i set a rate of 0
 // - if i want to run on ticks then i think i have to scour for emitters
-// - 
 
 

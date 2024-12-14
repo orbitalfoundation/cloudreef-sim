@@ -3,7 +3,7 @@ const waterLevel = globalThis.config.waterLevel;
 
 function people_system(blob,sys) {
 
-	if(!blob.time) return
+	if(!blob.time || typeof blob.time !== 'object') return
 	const time = blob.time
 	const volume = sys.volume
 
@@ -26,33 +26,36 @@ function people_system(blob,sys) {
 
 		// query for spatially nearest match and then move this entity to that location
 		const query = {
-			position:entity.position,
+			position:entity.volume.pose.position,
 			order:'distance',
 			limit:1,
 			callback: (nearest) => {
-				entity.position = {
-					x: nearest.position.x, 
-					y: nearest.position.y + peopleElevation, 
-					z: nearest.position.z
-				}
+				// @todo this relies on the binding layer being bound already - it is a bit sketchy
+				entity.volume.pose.position.x = nearest.volume.pose.position.x, 
+				entity.volume.pose.position.y = nearest.volume.pose.position.y + peopleElevation, 
+				entity.volume.pose.position.z = nearest.volume.pose.position.z
 			}
 		}
 
-		// @todo it is expensive to set this over and over
+		// @todo it is excruciatingly expensive to set this over and over
 		// @todo following the boats movement is expensive; should have a parent child relation
 
 		if (time.secondOfDay >= time.eveningSeconds) {
+			if(entity._latch == 2) return
+			entity._latch = 2
 			query.filter = {building:true}
 			volume.query(query)
 		}
 
 		else if (time.secondOfDay >= time.morningSeconds) {
+			if(entity._latch == 1) return
+			entity._latch = 1
 			query.filter = {boat:true}
 			volume.query(query)
 		}
 	}
 
-	// visit all people
+	// visit all people every frame
 
 	volume.query({filter:{people:true},callback})
 }
@@ -61,7 +64,7 @@ const people = {
 	people: true,
 	volume: { 
 		geometry: 'sphere', 
-		whd: [2,2,2],
+		pose: { scale: {x:2,y:2,z:2 } },
 		material: { color: 'gold' } 
 	},
 }
@@ -71,7 +74,7 @@ export const people_spawner = {
 	volume: {
 		geometry: 'cube',
 		material: { color: 'black' },
-		whd: [10,10,10]
+		pose: { scale: {x:10,y:10,z:10 } },
 	},
 	emitter: {
 		range: [ waterLevel +1, waterLevel + 3 ],
