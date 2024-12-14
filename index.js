@@ -1,9 +1,9 @@
 
-import sys from 'https://cdn.jsdelivr.net/npm/orbital-sys/src/sys.js'
+import sys from 'https://cdn.jsdelivr.net/npm/orbital-sys@latest/src/sys.js'
 
 sys({
 	load:[
-		'https://cdn.jsdeliver.net/npm/orbital-volume/volume.js',
+		'https://cdn.jsdelivr.net/npm/orbital-volume@latest/volume.js',
 		'here/agents/all.js'
 	]
 })

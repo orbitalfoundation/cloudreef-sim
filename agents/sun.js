@@ -70,15 +70,6 @@ const sunlightGeometry = {
 	},
 }
 
-// hack @todo improve
-var textureURL = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/17271/lroc_color_poles_1k.jpg"; 
-var displacementURL = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/17271/ldem_3_8bit.jpg"; 
-var worldURL = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/17271/hipp8_s.jpg"
-var textureLoader = new THREE.TextureLoader();
-var texture = textureLoader.load( textureURL );
-var displacementMap = textureLoader.load( displacementURL );
-var worldTexture = textureLoader.load( worldURL );
-
 const moonLight = {
 	uuid: '/light/moon',
 	moon: true,
@@ -104,13 +95,16 @@ const moonLightGeometry = {
 		pose: { scale:{x:10,y:10,z:10}},
 		material: {
 			color: 0xffffff ,
-			map: texture ,
-			displacementMap: displacementMap,
+			textureURL: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/17271/lroc_color_poles_1k.jpg",
+			displacementURL: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/17271/ldem_3_8bit.jpg",
 			displacementScale: 0.06,
-			bumpMap: displacementMap,
 			bumpScale: 0.04,
 		}
 	},
 }
+
+// backdrop sphere
+// 			worldURL: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/17271/hipp8_s.jpg",
+
 
 export const ordered_list = [ sunLight, sunlightGeometry, moonLight, moonLightGeometry ]
