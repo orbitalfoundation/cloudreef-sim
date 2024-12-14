@@ -16,5 +16,11 @@ export const tree_spawner = {
 		range:[ waterLevel + 5, Infinity ],
 		quantity: 200,
 		spawn: tree
+	},
+	volume: { // mandatory @todo fix
+		geometry: 'cube',
+		material: { color: 'black' },
+		pose: { scale: {x:10,y:10,z:10} }
 	}
 }
+

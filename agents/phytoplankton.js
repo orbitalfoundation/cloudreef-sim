@@ -1,21 +1,26 @@
 
 const waterLevel = globalThis.config.waterLevel
 
+// what to spawn
+
 const phytoplankton = {
 	phytoplankton: true,
 	volume: {
 		geometry: 'sphere',
 		material: { color: 'green' },
-		whd: [3,3,3]
+		pose: { scale: {x:3, y:3, z:3 } }
 	}
 }
+
+// a spawner - represented by a cube
+// @todo why at bottom ?
 
 export const phytoplankton_spawner = {
 	uuid: `/agents/phytoplankton_spawner`,
 	volume: {
 		geometry: 'cube',
 		material: { color: 'black' },
-		whd: [10,10,10]
+		pose: { scale: {x:10,y:10,z:10} }
 	},
 	emitter: {
 		range: [ 0, waterLevel -1 ],

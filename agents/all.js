@@ -1,5 +1,4 @@
 
-// @todo could use meta information to find local path as a load hint
 
 export const manifest = {
 	anchor: import.meta.url,
@@ -8,21 +7,29 @@ export const manifest = {
 		// general settings - load this first since it is exposed as a global
 		'./config.js',
 
-		// setup scene and camera for display
+		// create the heavens and the hearth
 		'./scene.js',
 
-		// let there be land, part the seas and first light
-		'./terrain.js',
+		// let there be light
+		'./light.js',
+
+		// let there be water underneath the sky and let dry ground appear
 		'./ocean.js',
+		'./terrain.js',
+
+		// let there be lights in the vault of the sky to separate the day from the night
 		'./sun.js',
 
-		// sprinkle ecosystem with participants
+		// let the land produce vegetation: seed-bearing plants and trees
 		'./emitter.js',
+		'./trees.js',
+
+		// let the water teem with living creatures
 		'./phytoplankton.js',
 		'./fish.js',
 		'./organism.js',
 
-		'./trees.js',
+		// let us make mankind in our image
 		'./buildings.js',
 		'./boats.js',
 		'./people.js',

@@ -1,17 +1,24 @@
 
 const size = globalThis.config.size
 
-// @todo camera
-
-export const scene = {
+export const aaa_scene = {
 	uuid:'/agents/scene',
 	volume: {
 		geometry: 'scene',
 		near: 1,
-		far: size*2,
-		cameraPosition:[size/2,size/2,size],
-		cameraTarget:[size/2,0,size/2],
-		cameraMin: 1,
-		cameraMax: size
+		far: size*4,
 	}
 }
+
+export const aab_camera001 = {
+	volume: {
+		geometry: 'camera',
+		cameraMin: 1,
+		cameraMax: size*2,
+		pose:{
+			position:[size/2,size/2,size],
+			love:[size/2,0,size/2]
+		}
+	}
+}
+

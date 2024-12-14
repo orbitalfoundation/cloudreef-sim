@@ -70,9 +70,14 @@ function organismUpdate(sys,entity,volume,terrain) {
 			const childEntity = {
 				...JSON.parse(JSON.stringify(parent.organism.spawnHints)),
 				organism: childOrganism,
-				position: {...parent.position},
 				uuid: `${parent.uuid}/offspring/${Date.now()}`
 			}
+
+			const x = parent.volume.pose.position.x
+			const y = parent.volume.pose.position.y
+			const z = parent.volume.pose.position.z
+			if(!childEntity.volume.pose) childEntity.volume.pose = {}
+			childEntity.volume.pose.position = {x,y,z}
 
 			sys.resolve(childEntity)
 		}
@@ -84,14 +89,14 @@ function organismUpdate(sys,entity,volume,terrain) {
 	const minY = organism.range[0]
 	const maxY = organism.range[1]
 	for (let attempts = 0; attempts < 10; attempts++) {
-		let newX = entity.position.x + Math.cos(organism.heading) * speed
+		let newX = entity.volume.pose.position.x + Math.cos(organism.heading) * speed
 		let newY = maxY
-		let newZ = entity.position.z + Math.sin(organism.heading) * speed
+		let newZ = entity.volume.pose.position.z + Math.sin(organism.heading) * speed
 		newX = Math.max(0, Math.min(newX, xsize - 1))
 		newZ = Math.max(0, Math.min(newZ, zsize - 1))
 		const terrainHeight = terrain[Math.floor(newZ) * zsize + Math.floor(newX)]
 		if (terrainHeight >= minY && terrainHeight <= maxY) {
-			entity.position = { x: newX, y: newY, z: newZ }
+			entity.volume.pose.position.set(newX,newY,newZ)
 			break
 		} else {
 			organism.heading += (Math.random() - 0.5) * maxHeadingChange
@@ -114,16 +119,16 @@ function organismUpdate(sys,entity,volume,terrain) {
 		filter[organism.consumes||'phytoplankton'] = true
 		volume.query({
 			filter,
-			position: entity.position,		
+			position: entity.volume.pose.position,		
 			radius: organism.searchRadius || 10,
 			callback: (food) => {
 				nearbyFood = food
 			}
 		})
 		if (nearbyFood && !nearbyFood.obliterate) {
-			const dx = nearbyFood.position.x - entity.position.x
-			const dy = 0 //nearbyFood.position.y - entity.position.y
-			const dz = nearbyFood.position.z - entity.position.z
+			const dx = nearbyFood.volume.pose.position.x - entity.volume.pose.position.x
+			const dy = 0 //nearbyFood.volume.pose.position.y - entity.volume.pose.position.y
+			const dz = nearbyFood.volume.pose.position.z - entity.volume.pose.position.z
 			const dist2 = dx*dx+dy*dy+dz*dz
 			entity.organism.heading = Math.atan2(dz, dx)
 
@@ -144,9 +149,16 @@ function organismUpdate(sys,entity,volume,terrain) {
 }
 
 function organismSystem(blob,sys) {
-	if (!blob.time) return
+
+	if (!blob.time || typeof blob.time !== 'object') return
 	const volume = sys.volume
-	const terrain = volume.terrain()
+
+	// @todo sloppy access to terrain
+	const surfaces = Object.values(volume._surfaces)
+	if(!surfaces.length || !surfaces[0].layers || !surfaces[0].layers.length) return
+	const layer = surfaces[0].layers[0]
+	const terrain = layer.elevations
+
 	volume.query({
 		filter:{organism:true},
 		callback:(entity)=>{

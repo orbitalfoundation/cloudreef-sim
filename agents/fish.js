@@ -14,16 +14,18 @@ const fish = {
 				species: 'tuna',
 			},
 			volume: {
-				geometry: 'sphere',
+				geometry: 'cylinder', 
+				props: [0.5, 2, 5, 8], 
 				material: { color: 'black' },
-				whd: [3,3,3]
+				pose: { scale: {x:3,y:3,z:3}}
 			}			
 		}
 	},
 	volume: {
-		geometry: 'sphere',
+		geometry: 'cylinder', 
+		props: [0.5, 2, 5, 8], 
 		material: { color: 'black' },
-		whd: [3,3,3]
+		pose: { scale: {x:3,y:3,z:3} }
 	}
 }
 
@@ -32,7 +34,7 @@ export const fish_spawner = {
 	volume: {
 		geometry: 'cube',
 		material: { color: 'black' },
-		whd: [10,10,10]
+		pose: { scale: {x:10,y:10,z:10 }}
 	},
 	emitter: {
 		range: [ 0, waterLevel-1 ],

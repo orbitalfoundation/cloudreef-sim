@@ -78,7 +78,7 @@ buttonContainer.appendChild(pauseButton);
 hudElement.appendChild(buttonContainer);
 
 function resolve(blob) {
-    if (!blob.time) return;
+    if (!blob.time || typeof blob.time !== 'object') return;
     const time = blob.time;
 
     const { years, dayOfYear, hourOfDay, secondOfDay } = time;
