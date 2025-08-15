@@ -18,6 +18,12 @@ function resolve(blob) {
 			Math.sin(angle) * radius / 2,
 			radius / 2
 		)
+		// hack - not registering parent/child relationships
+		// this is a bug in orbital-volume three-helper line 137 due to multi instancing
+		if(entity.volume.node && sunlightGeometry.volume.node &&
+			sunlightGeometry.volume.node.parent != entity.volume.node) {
+			entity.volume.node.add(sunlightGeometry.volume.node);
+		}
 	}
 
 	const moon = (entity)=>{
@@ -30,6 +36,14 @@ function resolve(blob) {
 			radius / 2
 		)
 		entity.volume.pose.rotation.y = moonAngle
+
+		// hack - not registering parent/child relationships 
+		// this is a bug in orbital-volume three-helper line 137 due to multi instancing
+		if(entity.volume.node && moonLightGeometry.volume.node &&
+			moonLightGeometry.volume.node.parent != entity.volume.node) {
+			entity.volume.node.add(moonLightGeometry.volume.node);
+		}
+
 	}
 
 	// @todo it is a bit of a hack to do both here
