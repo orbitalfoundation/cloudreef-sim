@@ -1,0 +1,7 @@
+name = "cloudreef-sim"
+horizon = "2026"
+repo = "orbitalfoundation/cloudreef-sim"
+code = "local"
+deploy = "none"
+autodeploy = false
+notes = ""
